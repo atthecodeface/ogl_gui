@@ -109,12 +109,18 @@ module Gl_program = struct
 
     (*f compile_program - Ocaml version of OpenGL.GL.shaders.compileProgram
      Create program from shaders, link, then check result and return ogl_result *)
-    let compile_program vert_id frag_id =
+    let compile_program opt_tess_control_id opt_tess_evaluation_id vert_id frag_id =
       let prog_id = Gl.create_program () in
-      Gl.attach_shader prog_id vert_id;
-      Gl.delete_shader vert_id;
-      Gl.attach_shader prog_id frag_id;
-      Gl.delete_shader frag_id;
+      let attach_delete shader_id =
+        Gl.attach_shader prog_id shader_id;
+        Gl.delete_shader shader_id
+      in
+      if (option_is_some opt_tess_control_id) then
+        attach_delete (option_get opt_tess_control_id);
+      if (option_is_some opt_tess_evaluation_id) then
+        attach_delete (option_get opt_tess_evaluation_id);
+      attach_delete vert_id;
+      attach_delete frag_id;
       Gl.link_program  prog_id;
       let link_result res_type = gl_int_val (Gl.get_programiv prog_id res_type) in
       if link_result Gl.link_status != Gl.true_ then
@@ -140,14 +146,14 @@ module Gl_program = struct
       read_file desc.fragment_src
       >>= fun fragment_src ->
       compile_opt_shader opt_tess_control_src Gl.tess_control_shader
-      >>= fun tess_control_id ->
+      >>= fun opt_tess_control_id ->
       compile_opt_shader opt_tess_evaluation_src Gl.tess_evaluation_shader
-      >>= fun tess_control_id ->
+      >>= fun opt_tess_evaluation_id ->
       compile_shader vertex_src Gl.vertex_shader
       >>= fun vert_id ->
       compile_shader fragment_src Gl.fragment_shader
       >>= fun frag_id ->
-      compile_program vert_id frag_id
+      compile_program opt_tess_control_id opt_tess_evaluation_id vert_id frag_id
       >>= fun prog_id ->
       let attrib_ids = ref [] in
       let uniform_ids = ref [] in

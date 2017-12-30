@@ -21,8 +21,6 @@ module Gl_program :
       uniforms : string list;
     }
     val make_desc : ?tess_control_src:string -> ?tess_evaluation_src:string -> string -> string -> string list -> string list -> desc
-    val compile_shader : string -> Tgl4.Gl.enum -> (int, string) result
-    val compile_program : int -> int -> (int, string) result
     val make : desc -> (t, string) result
     val delete : t -> (unit, 'a) result
     val get_attrib_id : ((string * int) list * 'a) list -> t -> 'a
