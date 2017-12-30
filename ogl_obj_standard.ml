@@ -18,7 +18,9 @@
  *)
 
 (*a Libraries *)
+open Ogl_obj
 open Ogl_obj_text
 open Ogl_obj_geometry
+class virtual ogl_obj = Ogl_obj.ogl_obj
 class ogl_obj_geometry = Ogl_obj_geometry.ogl_obj_geometry
 class ogl_obj_text = Ogl_obj_text.ogl_obj_text

@@ -53,6 +53,14 @@ let read_file filename =
   in
   Ok (read "")
 
+(*f read_opt_file - read a whole file in as a string *)
+let read_opt_file opt_filename = 
+  if (option_is_none opt_filename) then (Ok (None)) else (
+    read_file (option_get opt_filename)
+    >>= fun src ->
+    Ok (Some src)
+  )
+
 (*a Gl_program module *)
 module Gl_program = struct
     type t = {
@@ -61,6 +69,8 @@ module Gl_program = struct
         uniform_ids : (string * int) list;
       }
     type desc = {
+        tess_control_src : string option;
+        tess_evaluation_src : string option;
         vertex_src : string;
         fragment_src : string;
         attribs : string list;
@@ -68,7 +78,7 @@ module Gl_program = struct
       }
 
     (*f make_desc *)
-    let make_desc vertex_src fragment_src attribs uniforms = {vertex_src; fragment_src; attribs; uniforms}
+    let make_desc ?tess_control_src ?tess_evaluation_src vertex_src fragment_src attribs uniforms = {tess_control_src; tess_evaluation_src; vertex_src; fragment_src; attribs; uniforms}
 
     (*f compile_shader - Ocaml version of OpenGL.GL.shaders.compileShader
      Create shader, supply source, compile, then check result and return ogl_result *)
@@ -88,6 +98,14 @@ module Gl_program = struct
         end
       else
         Ok gl_id
+
+    (*f compile_opt_shader - compile shader source if not None *)
+    let compile_opt_shader opt_src gl_type =
+      if (option_is_none opt_src) then (Ok None) else (
+        compile_shader (option_get opt_src) gl_type
+        >>= fun shader_id ->
+       (Ok (Some shader_id))
+      )
 
     (*f compile_program - Ocaml version of OpenGL.GL.shaders.compileProgram
      Create program from shaders, link, then check result and return ogl_result *)
@@ -111,14 +129,20 @@ module Gl_program = struct
 
     (*f make - Ocaml version of opengl_app.c_opengl_shader.compile *)
     let make desc =
-      let vertex_glsl_filename = desc.vertex_src in
-      let fragment_glsl_filename = desc.fragment_src in
       let attribs = desc.attribs in
       let uniforms = desc.uniforms in
-      read_file vertex_glsl_filename
+      read_opt_file desc.tess_control_src
+      >>= fun opt_tess_control_src ->
+      read_opt_file desc.tess_evaluation_src
+      >>= fun opt_tess_evaluation_src ->
+      read_file desc.vertex_src
       >>= fun vertex_src ->
-      read_file fragment_glsl_filename
+      read_file desc.fragment_src
       >>= fun fragment_src ->
+      compile_opt_shader opt_tess_control_src Gl.tess_control_shader
+      >>= fun tess_control_id ->
+      compile_opt_shader opt_tess_evaluation_src Gl.tess_evaluation_shader
+      >>= fun tess_control_id ->
       compile_shader vertex_src Gl.vertex_shader
       >>= fun vert_id ->
       compile_shader fragment_src Gl.fragment_shader

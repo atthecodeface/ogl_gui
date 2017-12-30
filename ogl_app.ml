@@ -373,6 +373,21 @@ module Builder = struct
       Error msg -> ( Printf.printf "%s\n" msg; None )
     | Ok ()     -> ( get_opt_app app)
 
+  (*f create_app_from_xml_file - Create an app from an XML file *)
+  let create_app_from_xml_file app_xml_file stylesheet xml_additions app_creator = 
+    let read_file f = 
+      let rec read acc = 
+      try
+        let l = input_line f in
+        read (l::acc)
+      with _ -> acc
+      in
+      String.concat "\n" (List.rev (read []))
+    in
+    let app_xml = (read_file app_xml_file) in
+    Printf.printf "%s\n" app_xml ;
+    create_app_from_xml app_xml stylesheet xml_additions app_creator
+
     (*f All done *)
 end
 

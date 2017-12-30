@@ -1,3 +1,4 @@
+class virtual ogl_obj : Ogl_obj.ogl_obj
 class ogl_obj_geometry :
   Tgl4.Gl.enum ->
   int ->

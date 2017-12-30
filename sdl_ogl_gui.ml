@@ -291,4 +291,3 @@ let run_app ?width:(width=640) ?height:(height=400) ?title:(title="Untitled") (a
   Sdl_ogl_app.destroy sdl_app
   >>= fun () ->
   Ok ()
-

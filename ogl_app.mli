@@ -43,4 +43,9 @@ module Builder :
       Stylesheet.Stylesheet.t ->
       (string * (t -> string -> (string * string) list -> unit)) list ->
       (Ogl_widget.ogl_widget_display list -> ogl_app) -> ogl_app option
+    val create_app_from_xml_file :
+      in_channel ->
+      Stylesheet.Stylesheet.t ->
+      (string * (t -> string -> (string * string) list -> unit)) list ->
+      (Ogl_widget.ogl_widget_display list -> ogl_app) -> ogl_app option
   end

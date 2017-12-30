@@ -13,12 +13,14 @@ module Gl_program :
       uniform_ids : (string * int) list;
     }
     type desc = {
+      tess_control_src : string option;
+      tess_evaluation_src : string option;
       vertex_src : string;
       fragment_src : string;
       attribs : string list;
       uniforms : string list;
     }
-    val make_desc : string -> string -> string list -> string list -> desc
+    val make_desc : ?tess_control_src:string -> ?tess_evaluation_src:string -> string -> string -> string list -> string list -> desc
     val compile_shader : string -> Tgl4.Gl.enum -> (int, string) result
     val compile_program : int -> int -> (int, string) result
     val make : desc -> (t, string) result

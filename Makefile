@@ -22,7 +22,7 @@ all:  $(PROGS)
 
 .PHONY:show_mli
 show_mli:
-	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} ${ATCFCMXA} sdl_ogl_gui.ml -i
+	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} ${ATCFCMXA} ogl_obj_standard.ml -i
 
 #.PHONY: create_index
 #create_index: ./create_index
@@ -65,13 +65,17 @@ animatable.cmx: animatable.ml animatable.mli utils.cmx ${ATCFMXA}
 	@echo "Compile animatable.ml to create .cmx and .o"
 	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c animatable.ml
 
+ogl_types.cmi: ogl_types.mli
+	@echo "Compile ogl_types.mli to create .cmi"
+	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -opaque -c ogl_types.mli
+
 ogl_program.cmx: ogl_program.ml ogl_program.mli utils.cmx ${ATCFMXA}
 	@echo "Compile ogl_program.mli to create .cmi"
 	@$(OCAMLFIND) ocamlopt  -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_program.mli
 	@echo "Compile ogl_program.ml to create .cmx and .o"
 	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_program.ml
 
-ogl_layout.cmx: ogl_layout.ml ogl_layout.mli utils.cmx ${ATCFMXA}
+ogl_layout.cmx: ogl_layout.ml ogl_layout.mli utils.cmx ogl_types.cmi ${ATCFMXA}
 	@echo "Compile ogl_layout.mli to create .cmi"
 	@$(OCAMLFIND) ocamlopt  -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_layout.mli
 	@echo "Compile ogl_layout.ml to create .cmx and .o"
@@ -83,24 +87,25 @@ ogl_decoration.cmx: ogl_decoration.ml ogl_decoration.mli  ${ATCFMXA}
 	@echo "Compile ogl_decoration.ml to create .cmx and .o"
 	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_decoration.ml
 
-ogl_types.cmi: ogl_types.mli
-	@echo "Compile ogl_types.mli to create .cmi"
-	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -opaque -c ogl_types.mli
-
-ogl_obj_standard.cmx: ogl_obj.ml ogl_obj.mli ogl_obj_geometry.ml ogl_obj_text.ml utils.cmx ogl_types.cmi ${ATCFMXA}
-	@echo "Compile ogl_obj_standard.mli to create .cmi"
-	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -c ogl_obj_standard.mli
-	@echo "Compile ogl_obj_text.mli to create .cmi"
-	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -c ogl_obj_text.mli
-	@echo "Compile ogl_obj_geometry.mli to create .cmi"
-	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -c ogl_obj_geometry.mli
-	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_obj_standard.ml  -o ogl_obj_standard.cmx
+ogl_obj.cmx: ogl_obj.ml ogl_obj.mli
 	@echo "Compile ogl_obj.mli to create .cmi"
 	@$(OCAMLFIND) ocamlopt  ${OGL_GUI_PACKAGES} -c ogl_obj.mli
-	@echo "Compile ogl_obj.ml, ogl_obj_geometry.ml, ogl_obj_text to create .cmx and .o"
 	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_obj.ml           -o ogl_obj.cmx
+
+ogl_obj_geometry.cmx: ogl_obj_geometry.ml ogl_obj_geometry.mli
+	@echo "Compile ogl_obj_geometry.mli to create .cmi"
+	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -c ogl_obj_geometry.mli
 	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_obj_geometry.ml  -o ogl_obj_geometry.cmx
-	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_obj_text.ml      -o ogl_obj_text.cmx
+
+ogl_obj_text.cmx: ogl_obj_text.ml ogl_obj_text.mli
+	@echo "Compile ogl_obj_text.mli to create .cmi"
+	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -c ogl_obj_text.mli
+	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_obj_text.ml  -o ogl_obj_text.cmx
+
+ogl_obj_standard.cmx: ogl_obj.cmx ogl_obj_geometry.cmx ogl_obj_text.cmx utils.cmx ogl_types.cmi ${ATCFMXA}
+	@echo "Compile ogl_obj_standard.mli to create .cmi"
+	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -c ogl_obj_standard.mli
+	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_obj_standard.ml  -o ogl_obj_standard.cmx
 	@echo "Archive ogl_obj.cmx ogl_obj_geometry.cmx, ogl_obj_text.cmx to create ogl_obj_standard.cmxa"
 	@$(OCAMLFIND) ocamlopt -a -o ogl_obj_standard.cmxa ogl_obj.cmx ogl_obj_geometry.cmx ogl_obj_text.cmx 
 
