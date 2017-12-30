@@ -99,7 +99,7 @@ ogl_obj_geometry.cmx: ogl_obj_geometry.ml ogl_obj_geometry.mli
 
 ogl_obj_text.cmx: ogl_obj_text.ml ogl_obj_text.mli
 	@echo "Compile ogl_obj_text.mli to create .cmi"
-	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -c ogl_obj_text.mli
+	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML}  ${OGL_GUI_PACKAGES} -c ogl_obj_text.mli
 	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_obj_text.ml  -o ogl_obj_text.cmx
 
 ogl_obj_standard.cmx: ogl_obj.cmx ogl_obj_geometry.cmx ogl_obj_text.cmx utils.cmx ogl_types.cmi ${ATCFMXA}

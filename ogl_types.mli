@@ -120,6 +120,7 @@ class type t_ogl_widget =
 and t_ogl_display = (* Widget that is a whole openGL context - or possibly fraction thereof *)
   object
     inherit t_ogl_widget
+    method set_material : Ogl_program.Material.t -> Atcflib.Matrix.t -> int array
     method display_reshape : int -> int -> unit (* Reshapes the toplevel window *)
     method display_draw    : unit (* Draw the context; draw self and children with correct projection *)
     method display_key     : t_key_action -> int -> int -> int -> int -> int option
@@ -132,10 +133,13 @@ and t_ogl_display = (* Widget that is a whole openGL context - or possibly fract
   *)
 and t_ogl_app =
   object
+    method create_shaders : unit ogl_result
+    method create_materials : (unit, string) Result.result
     method set_create_window : t_create_window_fn -> unit (* Invoked by SDL/GLUT to populate the create_window function *)
     method create_window : ?width:int -> ?height:int -> ?title:string -> t_ogl_display -> t_window_handle ogl_result
     method create      : unit ogl_result
     method destroy     : unit ogl_result 
+    method add_material : string -> string -> string array -> unit ogl_result
     method add_program : string -> Gl_program.desc -> unit ogl_result
     method add_display : string -> t_ogl_display   -> t_window_handle -> unit
     method get_program : string -> Gl_program.t

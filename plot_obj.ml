@@ -21,6 +21,7 @@ open Stylesheet
 open Utils
 open Ogl_types
 open Ogl_obj
+open Ogl_program
 open Ogl_obj_standard
 open Ogl_widget (* for create_stylesheet *)
 open Sdl_ogl_gui
@@ -28,13 +29,6 @@ open Atcflib
 open Tgl4
 
 (*f Load font to start with *)
-open Font
-let outline_font = Font.Outline.load_json "cabin-bold"
-
-let data = [(0.2,0.); (0.7,1.); (0.3,0.4); (0.9,0.3);]
-
-let _ = Printf.printf "Read the data (%d points)\n" (List.length data)
-
 let sel_true          =  (fun e -> true)
 let sel_cbox          =  Stylable.is_element_id "control"
 let sel_type_button   =  Stylable.is_element_type "text_button"
@@ -79,42 +73,49 @@ let _ =
     ];
     ()
 
+
+let ba_float_array len = Bigarray.(Array1.create float32 c_layout len)
+let ba_uint16_array  len = Bigarray.(Array1.create int16_unsigned c_layout len)
+let num_pts = 8 (* cube *)
+let num_faces = 6 (* cube *)
+let axis_vertices  = ba_float_array (num_pts * 3)
+let axis_normals   = ba_float_array (num_pts * 3)
+let axis_colors    = ba_float_array (num_pts * 3)
+let axis_indices   = ba_uint16_array (num_faces*4) 
+let set_pt n d =
+    let set i v =
+      if (i<3) then (axis_vertices.{n*3+i} <- v)
+      else (if (i<6) then (axis_normals.{n*3+i-3} <- v)
+        else (axis_colors.{n*3+i-6} <- v))
+    in
+    List.iteri set d
+let set_face n d =
+    List.iteri (fun i v -> axis_indices.{n*4+i} <- v) d
+let _ =
+    set_pt 0 [ 1.;  1.;  -1.;  1.;  1.;  1. ;  1.;0.5;0.5];
+    set_pt 1 [ 1.; -1.;  -1.;  1.; -1.;  1. ;  1.;0.5;0.5];
+    set_pt 2 [-1.; -1.;  -1.; -1.; -1.;  1. ;  1.;0.5;0.5];
+    set_pt 3 [-1.;  1.;  -1.; -1.;  1.;  1. ;  1.;0.5;0.5];
+    set_pt 4 [ 1.;  1.;   1.;  1.;  1.;  1. ;  1.;0.5;0.5];
+    set_pt 5 [ 1.; -1.;   1.;  1.; -1.;  1. ;  1.;0.5;0.5];
+    set_pt 6 [-1.; -1.;   1.; -1.; -1.;  1. ;  1.;0.5;0.5];
+    set_pt 7 [-1.;  1.;   1.; -1.;  1.;  1. ;  1.;0.5;0.5];
+    set_face 0  [0; 1; 2; 3];
+    set_face 1  [0; 1; 2; 3];
+    set_face 2  [0; 1; 2; 3];
+    set_face 3  [0; 1; 2; 3];
+    set_face 4  [0; 1; 2; 3];
+    set_face 5  [0; 1; 2; 3];
+    set_face 3  [7; 6; 5; 4]
+
 class ogl_obj_data =
     object (self)
       inherit Ogl_obj.ogl_obj as super
-      val mutable num_pts = -1;
       method create_geometry ~offset =
-        let ba_float_array len = Bigarray.(Array1.create float32 c_layout len) in
-        let ba_uint16_array  len = Bigarray.(Array1.create int16_unsigned c_layout len) in
-        num_pts <- List.length data;
-        let axis_vertices = ba_float_array (num_pts * 3) in
-        let axis_colors   = ba_float_array (num_pts * 3) in
-        let axis_indices  = ba_uint16_array (num_pts*2) in
-        let do_pt i az =
-          let sc = 0.6 +. 0.4 *. ((float i) /. (float num_pts)) in
-          let (angle, z) = az in
-          let x = -. sc *. cos (2. *. 3.14159265 *. angle) in
-          let y = sc *. sin (2. *. 3.14159265 *. angle) in
-          axis_indices.{2*i+0} <- i ;
-          axis_indices.{2*i+1} <- (i+1) ;
-          if true then begin
-              axis_vertices.{i*3+0} <- x;
-              axis_vertices.{i*3+1} <- z*.2.-.1. ;
-              axis_vertices.{i*3+2} <- y ;
-            end
-          else begin
-              axis_vertices.{i*3+0} <- 2.*. angle -. 1. ;
-              axis_vertices.{i*3+1} <- z*.2.-.1. ;
-              axis_vertices.{i*3+2} <- 0. ;
-            end;
-          axis_colors.{i*3+0} <- z ;
-          axis_colors.{i*3+1} <- 0. ;
-          axis_colors.{i*3+2} <- 1. -. z in
-        List.iteri do_pt data ;
-        super#create_geometry_from_indices axis_indices [axis_vertices; axis_colors]
+        super#create_geometry_from_indices axis_indices [axis_vertices; axis_normals; axis_colors]
       method draw =
         let d _ = 
-           Gl.draw_elements Gl.lines (num_pts*2) Gl.unsigned_short (`Offset 0);
+           Gl.draw_elements Gl.quads (num_faces*4) Gl.unsigned_short (`Offset 0);
            ()
         in self#bind_and_draw d
     end
@@ -207,6 +208,11 @@ end
 class ogl_app_plot stylesheet ogl_displays : t_ogl_app = 
   object (self)
     inherit Ogl_app.ogl_app stylesheet ogl_displays as super
+    method create_shaders =
+      super#create_shaders ;
+      let gl_program_desc = Gl_program.make_desc "shaders/vnc_vertex.glsl" "shaders/fragment.glsl" [] ["M"; "V"; "G"; "P";] in
+      self#add_program "vnc_vertex" gl_program_desc >>= fun _ ->
+      Ok ()
 
   (*f button_pressed *)
   method button_pressed widget =
@@ -254,6 +260,7 @@ let main () =
     )
   | Some app ->
      (
+
        match (Sdl_ogl_gui.run_app app) with
          Ok () -> exit 0
        | Error msg -> Printf.printf "%s\n" msg; exit 1

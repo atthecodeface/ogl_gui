@@ -19,6 +19,7 @@
 
 (*a Libraries *)
 open Tgl4
+open Utils
 
 (*a Helper functions and modules *)
 (*f sfmt *)
@@ -185,3 +186,28 @@ module Gl_program = struct
 
 end
 
+(*a Material module *)
+module Material = struct
+  type t = {
+    prog_id    : int;
+    p_uid      : int;
+    g_uid      : int;
+    other_uids : int array;
+      }
+  let create prog others =
+    Ok { prog_id = prog.Gl_program.prog_id;
+      p_uid    = Gl_program.get_uniform_id "P" prog;
+      g_uid    = Gl_program.get_uniform_id "G" prog;
+      other_uids = Array.map (fun u -> Gl_program.get_uniform_id u prog) others;
+    }
+  let set_projection t projection transformation =
+    Gl.use_program t.prog_id;
+    Gl.uniform_matrix4fv t.p_uid 1 true projection;
+    Gl.uniform_matrix4fv t.g_uid 1 true transformation;
+    t.other_uids
+
+  let set_transformation t transformation =
+    Gl.uniform_matrix4fv t.g_uid 1 true transformation;
+    t.other_uids
+
+end

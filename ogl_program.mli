@@ -26,3 +26,15 @@ module Gl_program :
     val get_attrib_id : ((string * int) list * 'a) list -> t -> 'a
     val get_uniform_id : string -> t -> int
   end
+module Material :
+sig
+  type t = {
+      prog_id    : int;
+      p_uid      : int;
+      g_uid      : int;
+      other_uids : int array;
+    }
+  val create : Gl_program.t -> string array -> t Utils.ogl_result
+  val set_projection     : t -> Utils.float32_bigarray -> Utils.float32_bigarray -> int array
+  val set_transformation : t -> Utils.float32_bigarray -> int array
+end

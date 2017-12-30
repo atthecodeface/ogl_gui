@@ -6,6 +6,7 @@ class virtual ogl_obj :
     val mutable index_glid : int
     val mutable vao_glid : int
     val mutable vertex_data_glids : int list
+    val mutable opt_program : Ogl_program.Gl_program.t option
     method private create_geometry_from_indices :
       ('a, 'b) Tgl4.Gl.bigarray ->
       Utils.float32_bigarray list -> unit Utils.ogl_result

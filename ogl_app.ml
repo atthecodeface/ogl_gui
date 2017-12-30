@@ -12,6 +12,7 @@ class ogl_app stylesheet ogl_displays : t_ogl_app =
 object (self)
   (*b Properties *)
   val mutable program_list:(string*Gl_program.t) list = [];
+  val mutable material_list:(string*Material.t) list = [];
   val mutable display_list:(string*t_ogl_display*t_window_handle) list = [];
   val mutable next_handle = 0;
   val mutable create_window_fn = fun ~width ~height ~title handle -> Ok 0;
@@ -44,6 +45,15 @@ object (self)
   method add_display (name:string) display window_handle = 
     (display_list <- (name,display,window_handle)::display_list )
 
+  (*f create_shaders - called during app creation *)
+  method create_shaders =
+    raise_any_error (self#add_program "p" (Gl_program.make_desc "shaders/vertex_obj_viewer.glsl" "shaders/fragment.glsl" [] ["M"; "V"; "G"; "P";] ))
+     >>= fun _ ->
+    raise_any_error (self#add_program "widget_color" (Gl_program.make_desc "shaders/widget_vertex.glsl" "shaders/widget_color_fragment.glsl" [] ["G"; "P"; "C"])) (* No M or V for a standard widget *)
+
+  (*f create_materials - called during app creation *)
+  method create_materials =
+    self#add_material "widget_color" "widget_color" [|"C"|]
 
   (*f create - create the app *)
   method create = 
@@ -62,9 +72,9 @@ object (self)
     in
     do_all_displays (fun od -> self#create_window ~width:800 ~height:600 ~title:"Display" od)
     >>= fun window_handles ->
-    raise_any_error (self#add_program "widget_color" (Gl_program.make_desc "shaders/widget_vertex.glsl" "shaders/widget_color_fragment.glsl" [] ["G"; "P"; "C"]))
+    self#create_shaders
     >>= fun _ ->
-    raise_any_error (self#add_program "standard_color" (Gl_program.make_desc "shaders/vertex_standard.glsl" "shaders/fragment_color.glsl" [] ["M"; "V" ; "G"; "P"; "C"]))
+    self#create_materials
     >>= fun _ ->
     do_all_displays (fun od -> od#create_tree_styles)
     >>= fun _ ->
@@ -79,6 +89,12 @@ object (self)
   method add_program (name:string) program_desc = 
     raise_any_error (Gl_program.make program_desc) >>=
     fun p -> (program_list <- (name,p)::program_list ; Ok () )
+
+  (*f add_material name program other_uids - add a material (after program has been added) *)
+  method add_material (name:string) (program:string) (other_uids:string array) = 
+    let prog = self#get_program program in
+    Material.create prog other_uids >>=
+    fun m -> (material_list <- (name,m)::material_list ; Ok () )
 
   (*f get_program name - get the Gl_program.t of a named program that has been added *)
   method get_program name = List.assoc name program_list

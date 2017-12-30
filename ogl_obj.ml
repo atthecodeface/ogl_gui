@@ -34,6 +34,7 @@ class virtual ogl_obj  =
     val mutable vao_glid = -1
     val mutable index_glid = -1
     val mutable vertex_data_glids = []
+    val mutable opt_program : Ogl_program.Gl_program.t option = None
 
     (*f bind_and_draw - bind vao, index vbo, and two float3 vbos and call draw callback*)
     method private bind_and_draw (draw_fn:unit->unit) : unit =

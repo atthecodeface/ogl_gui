@@ -627,8 +627,6 @@ class ogl_widget_viewer stylesheet name_values  =
     (*f create *)
     method create app =
       super#create app ;
-      let gl_program_desc = Gl_program.make_desc "shaders/vertex_obj_viewer.glsl" "shaders/fragment.glsl" [] ["M"; "V"; "G"; "P";] in
-      app#add_program "p" gl_program_desc >>= fun _ ->
          let program = app#get_program "p" in
          let m_uid      = Gl_program.get_uniform_id "M"   program in
          let v_uid      = Gl_program.get_uniform_id "V"   program in
@@ -735,9 +733,21 @@ class ogl_widget_viewer stylesheet name_values  =
     (*f All done *)
   end
 
-(*c ogl_widget_display - Display which contains a single widget Should
-  this own an OpenGL context and an openGL render buffer (which might
-  be an OS window)?
+(*c ogl_widget_display - Display which contains a single widget
+  This owns an OpenGL context and an openGL render buffer (which might
+  be an OS window)
+
+  A material is a program, a P, a G, and another 'other parameters' uniform
+  P is always set to 'projection'
+  G is a per-widget 'GUI' projection - this may rotate, translate, and so on, in to a [-1;+1]  cube
+  Other parameters would include M and V for an 3D-world, a color for a material, and so on
+  set_material <program> <G> <other> should
+  check if program is current, and if not select it and set the P uniform
+  It should set the G uniform and other uniform
+
+  The 'draw_content' for a widget should set its material
+
+  The decoration 'draw_border' and 'draw_background' should set their material
   *)
 let screen_ppmm   = 5. (* 5 pixels per mm *)
 let screen_2ppmm  = 2. *. screen_ppmm
@@ -757,6 +767,7 @@ object (self)
   val play2 = Matrix.make 4 4
   val playq1 = Quaternion.make_rijk 1.0 0.0 0.0 0.
   val playq2 = Quaternion.make_rijk 1.0 0.0 0.0 0.
+  val mutable current_material : Ogl_program.Material.t option = None
   initializer
     if option_is_some toplevel_init then
      super#add_child (option_get toplevel_init) ;
@@ -783,6 +794,16 @@ object (self)
     self#layout [|w_mm; h_mm; screen_depth_mm|] Matrix.(identity (make 4 4)) [|0.0;0.0;0.|];
     Gl.viewport 0 0 w h ;
     ()
+
+  method set_material material widget_transformation =
+    let transformation = ba_of_matrix4 widget_transformation in
+    if ((option_is_none current_material) or (material != (option_get current_material))) then (
+      current_material <- Some material;
+      Material.set_projection material (ba_of_matrix4 projection) transformation
+    ) else (
+      Material.set_transformation material transformation
+    )
+ 
   method display_draw = 
     Gl.enable Gl.depth_test;
     Gl.clear_color 0.5 0.5 0.5 1.;
@@ -791,6 +812,7 @@ object (self)
     Quaternion.premultiply playq2 playq1;
     Matrix.assign_from_q playq1 play1;
     Matrix.assign_m_m projection play1 play2;
+    current_material <- None;
     if true then
       self#draw (option_get app) (ba_of_matrix4 projection)
     else
