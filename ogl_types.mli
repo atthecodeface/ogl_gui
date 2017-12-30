@@ -103,8 +103,8 @@ class type t_ogl_widget =
     method layout           : float t_dims3 -> Matrix.t -> float t_dims3 -> unit
     method layout_content_with_dims  : float t_dims3 -> Matrix.t -> float t_dims3 -> unit (* override with layout widget *)
     method set_layout       : float t_dims3 -> Matrix.t -> float t_dims3 -> Matrix.t
-    method draw             : t_ogl_app -> float32_bigarray -> unit (* app so that OpenGL may be interacted with *)
-    method draw_content     : t_ogl_app -> float32_bigarray-> Matrix.t -> unit (* app so that OpenGL may be interacted with *)
+    method draw             : t_ogl_app -> t_ogl_display -> unit (* app so that OpenGL may be interacted with *)
+    method draw_content     : t_ogl_app -> t_ogl_display -> Matrix.t -> unit (* app so that OpenGL may be interacted with *)
     method intersect_ray    : Collider_ray.t -> float option
     method key              : t_key_action -> int -> int -> t_action_vector -> t_key_result
     method mouse            : t_mouse_action -> int -> t_action_vector -> int array -> t_mouse_result
@@ -143,6 +143,7 @@ and t_ogl_app =
     method add_program : string -> Gl_program.desc -> unit ogl_result
     method add_display : string -> t_ogl_display   -> t_window_handle -> unit
     method get_program : string -> Gl_program.t
+    method get_material : string -> Material.t
     method button_pressed : t_ogl_widget -> unit
     method key         : t_window_handle option -> t_key_action -> int -> int -> int -> int -> unit
     method mouse       : t_window_handle option -> t_mouse_action -> int -> int -> int -> int array -> unit

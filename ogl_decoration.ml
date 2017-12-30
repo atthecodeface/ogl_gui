@@ -206,14 +206,10 @@ object (self)
   (*f draw_border - draw the border (of size in last 'set_dims' centred on 0,0) using transform *)
   val mutable angle = 0.;
   val mutable time = 0;
-  method draw_border (app:t_ogl_app) projection =
+  method draw_border (app:t_ogl_app) (display:t_ogl_display) =
     if ((option_is_none gl_obj) || (border_triangles=0)) then ()
     else
-      (let program = app#get_program "widget_color" in
-      let color_uid  = Gl_program.get_uniform_id "C"   program in
-      let g_uid      = Gl_program.get_uniform_id "G"   program in
-      let p_uid      = Gl_program.get_uniform_id "P"   program in
-      Gl.use_program program.Gl_program.prog_id;
+     (let other_uids = display#set_material (app#get_material "widget_color") draw_transformation in
       if Animatable_linear_float.is_changing border_color then
          (Animatable_linear_float.time_step time border_color; time <- time + 1;);
 (*    else
@@ -221,31 +217,23 @@ object (self)
 );*)
       let bg_rgb = Animatable_linear_float.get_value border_color in
       let (bg_r, bg_g, bg_b) = (bg_rgb.(0), bg_rgb.(1), bg_rgb.(2)) in
-      Gl.uniform3f color_uid bg_r bg_g bg_b;
-      Gl.uniform_matrix4fv g_uid 1 true (ba_of_matrix4 draw_transformation);
-      Gl.uniform_matrix4fv p_uid 1 true projection;
-      angle <- angle +. 0.01;
-      (option_get gl_obj)#draw_subset (bg_triangles*3) (border_triangles*3);
-      Gl.bind_vertex_array 0;
+       Gl.uniform3f other_uids.(0) bg_r bg_g bg_b;
+       angle <- angle +. 0.01;
+       (option_get gl_obj)#draw_subset 0 (bg_triangles*3);
+       Gl.bind_vertex_array 0;
       ())
 
   (*f draw_background - draw the background (of size in last 'set_dims' centred on 0,0) using transform *)
-  method draw_background (app:t_ogl_app) projection =
+  method draw_background (app:t_ogl_app) (display:t_ogl_display) =
     if ((option_is_none gl_obj) || (bg_triangles=0)) then ()
     else
-      (let program = app#get_program "widget_color" in
-      let color_uid  = Gl_program.get_uniform_id "C"   program in
-      let g_uid      = Gl_program.get_uniform_id "G"   program in
-      let p_uid      = Gl_program.get_uniform_id "P"   program in
-      Gl.use_program program.Gl_program.prog_id;
-      let bg_rgb = face_color in
-      let (bg_r, bg_g, bg_b) = (bg_rgb.(0), bg_rgb.(1), bg_rgb.(2)) in
-      Gl.uniform3f color_uid bg_r bg_g bg_b;
-      Gl.uniform_matrix4fv g_uid 1 true (ba_of_matrix4 draw_transformation);
-      Gl.uniform_matrix4fv p_uid 1 true projection;
-      angle <- angle +. 0.01;
-      (option_get gl_obj)#draw_subset 0 (bg_triangles*3);
-      Gl.bind_vertex_array 0;
+      (let other_uids = display#set_material (app#get_material "widget_color") draw_transformation in
+       let bg_rgb = face_color in
+       let (bg_r, bg_g, bg_b) = (bg_rgb.(0), bg_rgb.(1), bg_rgb.(2)) in
+       Gl.uniform3f other_uids.(0) bg_r bg_g bg_b;
+       angle <- angle +. 0.01;
+       (option_get gl_obj)#draw_subset 0 (bg_triangles*3);
+       Gl.bind_vertex_array 0;
       ())
 
 end

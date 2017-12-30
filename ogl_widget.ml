@@ -304,15 +304,15 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
       internal_transformation
 
     (*f draw - draw the widget, decoration border first, then content, children, and planes *)
-    method draw app projection =
+    method draw app display =
       (* draw decoration *)
-      decoration#draw_border app projection;
+      decoration#draw_border app display;
       (* draw content *)
-      self#draw_content app projection internal_transformation;
+      self#draw_content app display internal_transformation;
       (* draw children *)
-      List.iter (fun c -> c#draw app projection) children;
+      List.iter (fun c -> c#draw app display) children;
       (* draw background *)
-      decoration#draw_background app projection
+      decoration#draw_background app display
 
     (*f get_content_desired_dims - get the xyz dimensions of the size of the content of the widget (override if a specific widget) *)
     method get_content_desired_dims = [|0.;0.;0.|]
@@ -321,7 +321,7 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
     method get_content_draw_dims = content_draw_dims
 
     (*f draw_content - draw the actual content of the widget (override if a specific widget) *)
-    method draw_content     app projection transformation = () (* Draw content *)
+    method draw_content     app display transformation = () (* Draw content *)
 
     (*f key - handle a keypress along the action vector *)
     method key action k meta vector =
@@ -539,18 +539,12 @@ class ogl_widget_text stylesheet name_values =
     end
   method get_content_desired_dims = 
     text_dims
-  method draw_content app projection transformation =
+  method draw_content app display transformation =
     if (option_is_none obj) then ()
     else
-      (let program = app#get_program "widget_color" in
-      let color_uid  = Gl_program.get_uniform_id "C"   program in
-      let g_uid      = Gl_program.get_uniform_id "G"   program in
-      let p_uid      = Gl_program.get_uniform_id "P"   program in
-      Gl.use_program program.Gl_program.prog_id;
+      (let other_uids = display#set_material (app#get_material "widget_color") transformation in
       let rgb = Animatable_linear_float.get_value font_color in
-      Gl.uniform3f color_uid rgb.(0) rgb.(1) rgb.(2);
-      Gl.uniform_matrix4fv g_uid 1 true (ba_of_matrix4 transformation);
-      Gl.uniform_matrix4fv p_uid 1 true projection;
+      Gl.uniform3f other_uids.(0) rgb.(0) rgb.(1) rgb.(2);
       (option_get obj)#draw;
       Gl.bind_vertex_array 0;
       ())
@@ -621,21 +615,16 @@ class ogl_widget_viewer stylesheet name_values  =
   val q1 = Quaternion.make ()
   val q2 = Quaternion.make ()
   val q3 = Quaternion.make ()
-  val mutable opt_program = None
+  val mutable opt_material = None
   val mutable objs:ogl_obj list = []
 
     (*f create *)
     method create app =
+      opt_material <- Some (app#get_material "p") ;
       super#create app ;
-         let program = app#get_program "p" in
-         let m_uid      = Gl_program.get_uniform_id "M"   program in
-         let v_uid      = Gl_program.get_uniform_id "V"   program in
-         let g_uid      = Gl_program.get_uniform_id "G"   program in
-         let p_uid      = Gl_program.get_uniform_id "P"   program in
-         opt_program <- Some (program, m_uid, v_uid, g_uid, p_uid);
-         self#create_geometry;
-         idler_handle <- app#add_idler self#idle ;
-         Ok ()
+      self#create_geometry;
+      idler_handle <- app#add_idler self#idle ;
+      Ok ()
 
     (*f create_geometry *)
     method create_geometry =
@@ -652,10 +641,10 @@ class ogl_widget_viewer stylesheet name_values  =
       if (self#can_create) then self#create_geometry
 
     (*f draw_content *)
-    method draw_content app projection transformation =
-      if (option_is_none opt_program) then () else
+    method draw_content app display transformation =
+      if (option_is_none opt_material) then () else
       begin    
-        let (program, m_uid, v_uid, g_uid, p_uid) = (option_get opt_program) in
+        let material = (option_get opt_material) in
         ignore (Matrix.assign_from_q direction rotation);
         ignore (Matrix.identity translation);
         ignore (Matrix.set 0 3 (-. !centre_x) translation);
@@ -664,11 +653,9 @@ class ogl_widget_viewer stylesheet name_values  =
         ignore (Matrix.assign_m_m rotation translation tmp);
         let ar_scale = (min (super#get_content_draw_dims).(0) (super#get_content_draw_dims).(1)) *. 0.35 *. !scale in
         ignore (Matrix.scale ar_scale tmp);  (* Make -1/1 fit the width *)
-        Gl.use_program program.Gl_program.prog_id;
-        Gl.uniform_matrix4fv p_uid 1 true projection;
-        Gl.uniform_matrix4fv g_uid 1 true (ba_of_matrix4 transformation);
-        Gl.uniform_matrix4fv v_uid 1 true (ba_of_matrix4 tmp);
-        Gl.uniform_matrix4fv m_uid 1 true identity4;
+        let other_uids = display#set_material material transformation in
+        Gl.uniform_matrix4fv other_uids.(0) 1 true (ba_of_matrix4 tmp); (* 0 -> V *)
+        Gl.uniform_matrix4fv other_uids.(1) 1 true identity4; (* 1 -> M *)
         List.iter (fun o -> o#draw) objs;
         Gl.bind_vertex_array 0;
       end
@@ -811,12 +798,10 @@ object (self)
     Matrix.identity play1;
     Quaternion.premultiply playq2 playq1;
     Matrix.assign_from_q playq1 play1;
-    Matrix.assign_m_m projection play1 play2;
+    Matrix.assign_m_m projection play1 play2; (* can set projection to be play2 *)
     current_material <- None;
-    if true then
-      self#draw (option_get app) (ba_of_matrix4 projection)
-    else
-      self#draw (option_get app) (ba_of_matrix4 play2)
+    self#draw (option_get app) (self :> t_ogl_display)
+
   method private initial_action_vector x y =
     ignore (Vector.(set 0 (float x) tmp_vector |>
                       set 1 (float y) |>

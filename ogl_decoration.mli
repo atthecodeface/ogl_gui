@@ -26,12 +26,8 @@ class ogl_decoration :
     val tmp_vec_1 : Atcflib.Vector.t
     val mutable widget : Ogl_types.t_ogl_widget option
     method destroy : unit
-    method draw_background :
-      Ogl_types.t_ogl_app ->
-      (float, Bigarray.float32_elt) Tgl4.Gl.bigarray -> unit
-    method draw_border :
-      Ogl_types.t_ogl_app ->
-      (float, Bigarray.float32_elt) Tgl4.Gl.bigarray -> unit
+    method draw_background : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
+    method draw_border :Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
     method private generate_vertices : float Utils.t_dims3 -> float array
     method get_content_offset : float array
     method get_decoration_dims : float array

@@ -53,7 +53,8 @@ object (self)
 
   (*f create_materials - called during app creation *)
   method create_materials =
-    self#add_material "widget_color" "widget_color" [|"C"|]
+    self#add_material "widget_color" "widget_color" [|"C"|] ;
+    self#add_material "p" "p" [|"V"; "M"|]
 
   (*f create - create the app *)
   method create = 
@@ -98,6 +99,9 @@ object (self)
 
   (*f get_program name - get the Gl_program.t of a named program that has been added *)
   method get_program name = List.assoc name program_list
+
+  (*f get_material name - get the Material.t of a named material that has been added *)
+  method get_material name = List.assoc name material_list
 
   (*f draw window_handle - draw the ogl_display corresponding to the window handle *)
   method draw handle =

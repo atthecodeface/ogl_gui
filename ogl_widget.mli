@@ -43,10 +43,9 @@ class ogl_widget_box :
     method create : Ogl_types.t_ogl_app -> unit Utils.ogl_result
     method create_tree_styles : unit Utils.ogl_result
     method destroy : unit
-    method draw : Ogl_types.t_ogl_app -> Utils.float32_bigarray -> unit
+    method draw : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
     method draw_content :
-      Ogl_types.t_ogl_app ->
-      Utils.float32_bigarray -> Atcflib.Matrix.t -> unit
+      Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> Atcflib.Matrix.t -> unit
     method get_app : Ogl_types.t_ogl_app
     method get_children : Ogl_types.t_ogl_widget list
     method get_content_desired_dims : float Utils.t_dims3
@@ -96,10 +95,8 @@ class ogl_widget_grid :
     method create : Ogl_types.t_ogl_app -> unit Utils.ogl_result
     method create_tree_styles : unit Utils.ogl_result
     method destroy : unit
-    method draw : Ogl_types.t_ogl_app -> Utils.float32_bigarray -> unit
-    method draw_content :
-      Ogl_types.t_ogl_app ->
-      Utils.float32_bigarray -> Atcflib.Matrix.t -> unit
+    method draw : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
+    method draw_content : Ogl_types.t_ogl_app ->Ogl_types.t_ogl_display -> Atcflib.Matrix.t -> unit
     method get_app : Ogl_types.t_ogl_app
     method get_children : Ogl_types.t_ogl_widget list
     method get_content_desired_dims : float Utils.t_dims3
@@ -161,10 +158,8 @@ class ogl_widget_text :
     method create : Ogl_types.t_ogl_app -> unit Utils.ogl_result
     method create_tree_styles : unit Utils.ogl_result
     method destroy : unit
-    method draw : Ogl_types.t_ogl_app -> Utils.float32_bigarray -> unit
-    method draw_content :
-      Ogl_types.t_ogl_app ->
-      Utils.float32_bigarray -> Atcflib.Matrix.t -> unit
+    method draw : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
+    method draw_content : Ogl_types.t_ogl_app ->Ogl_types.t_ogl_display -> Atcflib.Matrix.t -> unit
     method get_app : Ogl_types.t_ogl_app
     method get_children : Ogl_types.t_ogl_widget list
     method get_content_desired_dims : float Utils.t_dims3
@@ -252,8 +247,7 @@ class ogl_widget_viewer :
     val mutable idler_handle : int
     val keys_down : Intset.t ref
     val mutable objs : Ogl_obj.ogl_obj list
-    val mutable opt_program :
-      (Ogl_program.Gl_program.t * int * int * int * int) option
+    val mutable opt_material : Ogl_program.Material.t option
     val q1 : Atcflib.Quaternion.t
     val q2 : Atcflib.Quaternion.t
     val q3 : Atcflib.Quaternion.t
@@ -269,10 +263,8 @@ class ogl_widget_viewer :
     method create_tree_styles : unit Utils.ogl_result
     method delete_geometry : unit
     method destroy : unit
-    method draw : Ogl_types.t_ogl_app -> Utils.float32_bigarray -> unit
-    method draw_content :
-      Ogl_types.t_ogl_app ->
-      Utils.float32_bigarray -> Atcflib.Matrix.t -> unit
+    method draw : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
+    method draw_content : Ogl_types.t_ogl_app ->Ogl_types.t_ogl_display -> Atcflib.Matrix.t -> unit
     method get_app : Ogl_types.t_ogl_app
     method get_children : Ogl_types.t_ogl_widget list
     method get_content_desired_dims : float Utils.t_dims3
