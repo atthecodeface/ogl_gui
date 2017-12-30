@@ -1,0 +1,47 @@
+  #version 330 core
+  in vec3 vertex;
+  in vec3 color;
+  uniform float spin;
+  out vec4 v_color;
+mat3 rotz(in float ang)
+{
+    mat3 m;
+    m =  mat3( vec3(cos(ang),-sin(ang),0.0),
+              vec3(sin(ang),cos(ang),0.0),
+              vec3(0.0,0.0,1.0) );
+    return m;
+}
+mat3 rotx(in float ang)
+{
+    mat3 m;
+    m = mat3( vec3(1.0,0.0,0.0),
+              vec3(0.0, cos(ang),-sin(ang)),
+              vec3(0.0,sin(ang),cos(ang)) );
+    return m;
+}
+mat3 roty(in float ang)
+{
+    mat3 m;
+    m =  mat3( vec3(cos(ang),0.0,-sin(ang)),
+                  vec3(0.0,1.0,0.0),
+                  vec3(sin(ang),0.0,cos(ang)) );
+    return m;
+}
+  void main()
+  {
+    mat3 m;
+    vec3 v;
+    float dz;
+    float ang2;
+    float ang=spin/300.0;
+    float brightness = 0.5;
+    ang2 = -2.0;
+    v = vec3(vertex.x-0.5, vertex.z-0.5, 0.5-vertex.y);
+    float light_z = spin/30.0;
+    light_z = (light_z-floor(light_z));
+    dz = vertex.z-light_z;
+    brightness = brightness + 0.01 / (dz*dz);
+    m = rotx(0.5) * roty(ang2+ang);
+    v_color = vec4(color*brightness, 1.0);
+    gl_Position = vec4(m*v, 1.0);
+  }

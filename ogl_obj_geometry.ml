@@ -1,0 +1,54 @@
+(** Copyright (C) 2017,  Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file          ogl.ml
+ * @brief         OpenGl framework library
+ *
+ *)
+
+(*a Libraries *)
+open Atcflib
+open Tgl4
+open Utils
+open Ogl_obj
+
+(*a OpenGL object classes *)
+(*c ogl_obj_geometry - N elements given vertices, colors and indices *)
+class ogl_obj_geometry style num indices vertex_data =
+  object (self)
+    (*f subclass of ogl_obj *)
+    inherit ogl_obj as super
+
+    (*f create_geometry - build geometry from static object data with offset *)
+    method create_geometry ~offset =
+      super#create_geometry_from_indices (ba_uint8s indices)
+                                         vertex_data
+
+    (*f draw - invoke super's draw with callback to draw elements once vao and vbos are bound *)
+    method draw =
+      let d _ = 
+        Gl.draw_elements style num Gl.unsigned_byte (`Offset 0);
+        ()
+      in self#bind_and_draw d
+
+    (*f draw_subset - draw a subset of the elements *)
+    method draw_subset offset num =
+      let d _ = 
+        Gl.draw_elements style num Gl.unsigned_byte (`Offset offset);
+        ()
+      in self#bind_and_draw d
+
+    (*f All done *)
+end
+
