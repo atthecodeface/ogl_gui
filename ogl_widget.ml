@@ -620,7 +620,9 @@ class ogl_widget_viewer stylesheet name_values  =
 
     (*f create *)
     method create app =
-      opt_material <- Some (app#get_material "p") ;
+      if (option_is_none opt_material) then (
+          opt_material <- Some (app#get_material "p") ;
+      );
       super#create app ;
       self#create_geometry;
       idler_handle <- app#add_idler self#idle ;

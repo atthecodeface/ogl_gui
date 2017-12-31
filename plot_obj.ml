@@ -77,11 +77,11 @@ let _ =
 let ba_float_array len = Bigarray.(Array1.create float32 c_layout len)
 let ba_uint16_array  len = Bigarray.(Array1.create int16_unsigned c_layout len)
 let num_pts = 8 (* cube *)
-let num_faces = 6 (* cube *)
+let num_faces = 6*2 (* cube *)
 let axis_vertices  = ba_float_array (num_pts * 3)
 let axis_normals   = ba_float_array (num_pts * 3)
 let axis_colors    = ba_float_array (num_pts * 3)
-let axis_indices   = ba_uint16_array (num_faces*4) 
+let axis_indices   = ba_uint16_array (num_faces*3) 
 let set_pt n d =
     let set i v =
       if (i<3) then (axis_vertices.{n*3+i} <- v)
@@ -90,23 +90,36 @@ let set_pt n d =
     in
     List.iteri set d
 let set_face n d =
-    List.iteri (fun i v -> axis_indices.{n*4+i} <- v) d
+    List.iteri (fun i v -> axis_indices.{n*3+i} <- v) d
 let _ =
-    set_pt 0 [ 1.;  1.;  -1.;  1.;  1.;  1. ;  1.;0.5;0.5];
-    set_pt 1 [ 1.; -1.;  -1.;  1.; -1.;  1. ;  1.;0.5;0.5];
-    set_pt 2 [-1.; -1.;  -1.; -1.; -1.;  1. ;  1.;0.5;0.5];
-    set_pt 3 [-1.;  1.;  -1.; -1.;  1.;  1. ;  1.;0.5;0.5];
-    set_pt 4 [ 1.;  1.;   1.;  1.;  1.;  1. ;  1.;0.5;0.5];
-    set_pt 5 [ 1.; -1.;   1.;  1.; -1.;  1. ;  1.;0.5;0.5];
-    set_pt 6 [-1.; -1.;   1.; -1.; -1.;  1. ;  1.;0.5;0.5];
-    set_pt 7 [-1.;  1.;   1.; -1.;  1.;  1. ;  1.;0.5;0.5];
-    set_face 0  [0; 1; 2; 3];
-    set_face 1  [0; 1; 2; 3];
-    set_face 2  [0; 1; 2; 3];
-    set_face 3  [0; 1; 2; 3];
-    set_face 4  [0; 1; 2; 3];
-    set_face 5  [0; 1; 2; 3];
-    set_face 3  [7; 6; 5; 4]
+    set_pt 0 [ 1.;  1.;  -1.;   1.;  1.;  -1. ;  1.;0.5;0.5];
+    set_pt 1 [ 1.; -1.;  -1.;   1.; -1.;  -1. ;  1.;0.5;0.5];
+    set_pt 2 [-1.; -1.;  -1.;  -1.; -1.;  -1. ;  1.;0.5;0.5];
+    set_pt 3 [-1.;  1.;  -1.;  -1.;  1.;  -1. ;  1.;0.5;0.5];
+    set_pt 4 [ 1.;  1.;   1.;   1.;  1.;  1. ;  0.;0.5;0.5];
+    set_pt 5 [ 1.; -1.;   1.;   1.; -1.;  1. ;  0.;0.5;0.5];
+    set_pt 6 [-1.; -1.;   1.;  -1.; -1.;  1. ;  0.;0.5;0.5];
+    set_pt 7 [-1.;  1.;   1.;  -1.;  1.;  1. ;  0.;0.5;0.5];
+    set_face 0  [0; 1; 3];
+    set_face 1  [1; 3; 2];
+    set_face 2  [3; 2; 7];
+    set_face 3  [2; 7; 6];
+    set_face 4  [7; 6; 4];
+    set_face 5  [6; 4; 5];
+    set_face 6  [4; 5; 0];
+    set_face 7  [5; 0; 1];
+
+    set_face 0  [0; 1; 2];
+    set_face 1  [1; 2; 5];
+    set_face 2  [2; 5; 0];
+    set_face 3  [5; 0; 4];
+    set_face 4  [0; 4; 3];
+    set_face 5  [4; 3; 5];
+    set_face 6  [4; 5; 0];
+    set_face 7  [5; 0; 1];
+    set_face 8  [0; 1; 3];
+    set_face 9  [1; 3; 2];
+
 
 class ogl_obj_data =
     object (self)
@@ -115,7 +128,7 @@ class ogl_obj_data =
         super#create_geometry_from_indices axis_indices [axis_vertices; axis_normals; axis_colors]
       method draw =
         let d _ = 
-           Gl.draw_elements Gl.quads (num_faces*4) Gl.unsigned_short (`Offset 0);
+           Gl.draw_elements Gl.triangles (num_faces*4) Gl.unsigned_short (`Offset 0);
            ()
         in self#bind_and_draw d
     end
@@ -202,6 +215,10 @@ class ogl_widget_plot stylesheet name_values =
   object (self)
     inherit ogl_widget_viewer stylesheet name_values as super
     (*f mouse - handle a mouse action along the action vector *)
+    method create app =
+      opt_material <- Some (app#get_material "vnc_vertex") ;
+      super#create app
+
     method mouse action mouse vector options = None
 end
 
@@ -212,6 +229,11 @@ class ogl_app_plot stylesheet ogl_displays : t_ogl_app =
       super#create_shaders ;
       let gl_program_desc = Gl_program.make_desc "shaders/vnc_vertex.glsl" "shaders/fragment.glsl" [] ["M"; "V"; "G"; "P";] in
       self#add_program "vnc_vertex" gl_program_desc >>= fun _ ->
+      Ok ()
+
+    method create_materials =
+      super#create_materials ;
+      self#add_material "vnc_vertex" "vnc_vertex" [|"V"; "M"|] ;
       Ok ()
 
   (*f button_pressed *)
