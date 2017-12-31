@@ -219,7 +219,7 @@ object (self)
       let (bg_r, bg_g, bg_b) = (bg_rgb.(0), bg_rgb.(1), bg_rgb.(2)) in
        Gl.uniform3f other_uids.(0) bg_r bg_g bg_b;
        angle <- angle +. 0.01;
-       (option_get gl_obj)#draw_subset 0 (bg_triangles*3);
+       (option_get gl_obj)#draw_subset (bg_triangles*3) (border_triangles*3);
        Gl.bind_vertex_array 0;
       ())
 
