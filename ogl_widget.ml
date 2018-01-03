@@ -545,7 +545,7 @@ class ogl_widget_text stylesheet name_values =
       (let other_uids = display#set_material (app#get_material "widget_color") transformation in
       let rgb = Animatable_linear_float.get_value font_color in
       Gl.uniform3f other_uids.(0) rgb.(0) rgb.(1) rgb.(2);
-      (option_get obj)#draw;
+      (option_get obj)#draw other_uids;
       Gl.bind_vertex_array 0;
       ())
 
@@ -658,7 +658,7 @@ class ogl_widget_viewer stylesheet name_values  =
         let other_uids = display#set_material material transformation in
         Gl.uniform_matrix4fv other_uids.(0) 1 true (ba_of_matrix4 tmp); (* 0 -> V *)
         Gl.uniform_matrix4fv other_uids.(1) 1 true identity4; (* 1 -> M *)
-        List.iter (fun o -> o#draw) objs;
+        List.iter (fun o -> o#draw other_uids) objs;
         Gl.bind_vertex_array 0;
       end
 
@@ -690,12 +690,12 @@ class ogl_widget_viewer stylesheet name_values  =
     method private idle _ = 
       if Intset.mem (int_of_char 'l') !keys_down then self#move_forward (-0.001);
       if Intset.mem (int_of_char ',') !keys_down then self#move_forward 0.001;
-      if Intset.mem (int_of_char ';') !keys_down then self#pitch 0.005;
-      if Intset.mem (int_of_char '.') !keys_down then self#pitch (-0.005);
-      if Intset.mem (int_of_char 'a') !keys_down then self#yaw 0.005;
-      if Intset.mem (int_of_char 's') !keys_down then self#yaw (-0.005);
-      if Intset.mem (int_of_char 'z') !keys_down then self#roll 0.005;
-      if Intset.mem (int_of_char 'x') !keys_down then self#roll (-0.005);
+      if Intset.mem (int_of_char '.') !keys_down then self#pitch 0.005;
+      if Intset.mem (int_of_char ';') !keys_down then self#pitch (-0.005);
+      if Intset.mem (int_of_char 'x') !keys_down then self#yaw 0.005;
+      if Intset.mem (int_of_char 'z') !keys_down then self#yaw (-0.005);
+      if Intset.mem (int_of_char 's') !keys_down then self#roll 0.005;
+      if Intset.mem (int_of_char 'a') !keys_down then self#roll (-0.005);
       if Intset.mem (int_of_char '\'') !keys_down then scale := !scale *. 1.05;
       if Intset.mem (int_of_char '/') !keys_down then  scale := !scale /. 1.05;
       if Intset.mem 27 !keys_down then None else

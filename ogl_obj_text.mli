@@ -17,6 +17,6 @@ class ogl_obj_text :
       (int, Bigarray.int16_unsigned_elt) Tgl4.Gl.bigarray ->
       Utils.float32_bigarray list -> unit Utils.ogl_result
     method delete_geometry : unit Utils.ogl_result
-    method draw : unit
+    method draw : int array -> unit
     method get_bbox : float * float * float * float * float * float
   end

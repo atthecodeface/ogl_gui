@@ -50,7 +50,9 @@ class virtual ogl_obj  =
             Gl.bind_buffer Gl.array_buffer glid;
             let size = Gl.bigarray_byte_size ba in
             Gl.buffer_data Gl.array_buffer size (Some ba) Gl.static_draw;
+            Gl.enable_vertex_attrib_array n;
             Gl.vertex_attrib_pointer n num typ false 0 (`Offset 0);
+            Printf.printf "\n\n\nCreated data glid %d:%d\n\n\n" n glid;
             do_first (n+1) vab_tl (glid::acc)
           )
         in 
@@ -92,7 +94,7 @@ class virtual ogl_obj  =
       Ok ()
 
     (*f draw - must be supplied by concrete class *)
-    method virtual draw : unit
+    method virtual draw : int array -> unit
 
     (*f create_geometry - must be supplied by concrete class *)
     method virtual create_geometry : offset:float*float*float -> unit ogl_result

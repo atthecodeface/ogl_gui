@@ -126,7 +126,7 @@ class ogl_obj_data =
       inherit Ogl_obj.ogl_obj as super
       method create_geometry ~offset =
         super#create_geometry_from_indices axis_indices [axis_vertices; axis_normals; axis_colors]
-      method draw =
+      method draw other_uids =
         let d _ = 
            (*Gl.draw_elements Gl.triangles (num_faces*4) Gl.unsigned_short (`Offset 0);*)
            Gl.draw_elements Gl.patches (num_faces*3) Gl.unsigned_short (`Offset 0);

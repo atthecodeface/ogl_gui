@@ -3,7 +3,7 @@ class virtual ogl_obj :
     method virtual create_geometry : offset:float * float * float -> unit Utils.ogl_result
     method delete_geometry : unit Utils.ogl_result
     method create_vao : (int * Tgl4.Gl.enum * Utils.float32_bigarray) list -> unit Utils.ogl_result
-    method virtual draw : unit
+    method virtual draw : int array -> unit
     val mutable index_glid : int
     val mutable vao_glid : int
     val mutable vertex_data_glids : int list

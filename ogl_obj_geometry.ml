@@ -36,7 +36,7 @@ class ogl_obj_geometry style num indices vertex_data =
                                          vertex_data
 
     (*f draw - invoke super's draw with callback to draw elements once vao and vbos are bound *)
-    method draw =
+    method draw other_uids =
       let d _ = 
         Gl.draw_elements style num Gl.unsigned_byte (`Offset 0);
         ()
