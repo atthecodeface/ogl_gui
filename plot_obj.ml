@@ -93,13 +93,13 @@ let set_face n d =
     List.iteri (fun i v -> axis_indices.{n*3+i} <- v) d
 let _ =
     set_pt 0 [ 1.;  1.;  -1.;   1.;  1.;  -1. ;  1.;0.5;0.5];
-    set_pt 1 [ 1.; -1.;  -1.;   1.; -1.;  -1. ;  1.;0.5;0.5];
-    set_pt 2 [-1.; -1.;  -1.;  -1.; -1.;  -1. ;  1.;0.5;0.5];
-    set_pt 3 [-1.;  1.;  -1.;  -1.;  1.;  -1. ;  1.;0.5;0.5];
+    set_pt 1 [ 1.; -1.;  -1.;   1.; -1.;  -1. ;  1.;0.8;0.5];
+    set_pt 2 [-1.; -1.;  -1.;  -1.; -1.;  -1. ;  1.;0.8;0.8];
+    set_pt 3 [-1.;  1.;  -1.;  -1.;  1.;  -1. ;  1.;0.5;0.8];
     set_pt 4 [ 1.;  1.;   1.;   1.;  1.;  1. ;  0.;0.5;0.5];
-    set_pt 5 [ 1.; -1.;   1.;   1.; -1.;  1. ;  0.;0.5;0.5];
-    set_pt 6 [-1.; -1.;   1.;  -1.; -1.;  1. ;  0.;0.5;0.5];
-    set_pt 7 [-1.;  1.;   1.;  -1.;  1.;  1. ;  0.;0.5;0.5];
+    set_pt 5 [ 1.; -1.;   1.;   1.; -1.;  1. ;  0.;0.8;0.5];
+    set_pt 6 [-1.; -1.;   1.;  -1.; -1.;  1. ;  0.;0.8;0.8];
+    set_pt 7 [-1.;  1.;   1.;  -1.;  1.;  1. ;  0.;0.5;0.8];
     set_face 0  [0; 1; 3];
     set_face 1  [1; 3; 2];
     set_face 2  [3; 2; 7];
@@ -128,7 +128,8 @@ class ogl_obj_data =
         super#create_geometry_from_indices axis_indices [axis_vertices; axis_normals; axis_colors]
       method draw =
         let d _ = 
-           Gl.draw_elements Gl.triangles (num_faces*4) Gl.unsigned_short (`Offset 0);
+           (*Gl.draw_elements Gl.triangles (num_faces*4) Gl.unsigned_short (`Offset 0);*)
+           Gl.draw_elements Gl.patches (num_faces*3) Gl.unsigned_short (`Offset 0);
            ()
         in self#bind_and_draw d
     end
@@ -227,7 +228,7 @@ class ogl_app_plot stylesheet ogl_displays : t_ogl_app =
     inherit Ogl_app.ogl_app stylesheet ogl_displays as super
     method create_shaders =
       super#create_shaders ;
-      let gl_program_desc = Gl_program.make_desc "shaders/vnc_vertex.glsl" "shaders/fragment.glsl" [] ["M"; "V"; "G"; "P";] in
+      let gl_program_desc = Gl_program.make_desc ~tess_control_src:"tess_control_example.glsl" ~tess_evaluation_src:"tess_eval_example.glsl" "vnc_vertex.glsl" "fragment.glsl" [] ["M"; "V"; "G"; "P";] in
       self#add_program "vnc_vertex" gl_program_desc >>= fun _ ->
       Ok ()
 
@@ -275,15 +276,15 @@ let main () =
   in
   let anon _ = raise (Arg.Bad "no arguments are supported") in
   Arg.parse (Arg.align options) anon usage;
-  match (Ogl_app.Builder.create_app_from_xml app_xml stylesheet xml_additions (fun displays -> (new ogl_app_plot stylesheet displays))) with
+  let app_creator displays = (new ogl_app_plot stylesheet displays) in
+  match (Ogl_app.Builder.create_app_from_xml app_xml stylesheet xml_additions app_creator) with
     None -> 
     (
       Printf.printf "Failed to create app\n"; exit 1
     )
   | Some app ->
      (
-
-       match (Sdl_ogl_gui.run_app app) with
+       match (Sdl_ogl_gui.run_app ~ogl_root_dir:"." app) with
          Ok () -> exit 0
        | Error msg -> Printf.printf "%s\n" msg; exit 1
      )

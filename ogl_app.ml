@@ -47,9 +47,9 @@ object (self)
 
   (*f create_shaders - called during app creation *)
   method create_shaders =
-    raise_any_error (self#add_program "p" (Gl_program.make_desc "shaders/vertex_obj_viewer.glsl" "shaders/fragment.glsl" [] ["M"; "V"; "G"; "P";] ))
+    raise_any_error (self#add_program "p" (Gl_program.make_desc "vertex_obj_viewer.glsl" "fragment.glsl" [] ["M"; "V"; "G"; "P";] ))
      >>= fun _ ->
-    raise_any_error (self#add_program "widget_color" (Gl_program.make_desc "shaders/widget_vertex.glsl" "shaders/widget_color_fragment.glsl" [] ["G"; "P"; "C"])) (* No M or V for a standard widget *)
+    raise_any_error (self#add_program "widget_color" (Gl_program.make_desc "widget_vertex.glsl" "widget_color_fragment.glsl" [] ["G"; "P"; "C"])) (* No M or V for a standard widget *)
 
   (*f create_materials - called during app creation *)
   method create_materials =
@@ -57,7 +57,9 @@ object (self)
     self#add_material "p" "p" [|"V"; "M"|]
 
   (*f create - create the app *)
-  method create = 
+  method create ogl_root_dir = 
+    Gl_program.reset_shader_path ();
+    Gl_program.add_shader_path (sfmt "%s/shaders" ogl_root_dir);
     let do_all_displays f =
       let do_if_ok acc od =
         match acc with

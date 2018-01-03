@@ -22,7 +22,7 @@ all:  $(PROGS)
 
 .PHONY:show_mli
 show_mli:
-	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} ${ATCFCMXA} ogl_obj_standard.ml -i
+	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} ${ATCFCMXA} ogl_program.ml -i
 
 #.PHONY: create_index
 #create_index: ./create_index

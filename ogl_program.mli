@@ -4,9 +4,10 @@ val gl_int_val :
 val gl_with_int :
   ((int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t -> 'a) ->
   int -> 'a
-val read_file : string -> (string, 'a) result
 module Gl_program :
   sig
+    val reset_shader_path : unit -> unit
+    val add_shader_path : string -> unit
     type t = {
       prog_id : int;
       attrib_ids : (string * int) list;

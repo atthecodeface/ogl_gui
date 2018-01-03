@@ -54,4 +54,6 @@ module Sdl_ogl_app :
 val run_app :
   ?width:int ->
   ?height:int ->
-  ?title:string -> Ogl_app.ogl_app -> (unit, string) Result.result
+  ?title:string -> 
+  ?ogl_root_dir:string ->
+  Ogl_app.ogl_app -> (unit, string) Result.result

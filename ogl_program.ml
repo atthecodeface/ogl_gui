@@ -45,25 +45,44 @@ let ba_uint16_array len = Bigarray.(Array1.create int16_unsigned c_layout len)
 let gl_int_val  f   = f ba_int32_1 ; Int32.to_int ba_int32_1.{0}
 let gl_with_int f i = ba_int32_1.{0} <- Int32.of_int i; f ba_int32_1
 
-(*f read_file - read a whole file in as a string *)
-let read_file filename = 
-  let f = open_in filename in
-  let rec read acc =
-    try read (acc ^ (input_line f) ^ "\n")
-    with End_of_file -> close_in f ; acc
-  in
-  Ok (read "")
+(*f open_file_on_path *)
+let open_file_on_path pathname filename = 
+  let full_name = if (pathname = "") then filename else (String.concat "/" [pathname ; filename]) in
+  try let f = open_in full_name in
+    Some f
+  with _ -> None
 
-(*f read_opt_file - read a whole file in as a string *)
-let read_opt_file opt_filename = 
+(*f open_file_on_path_list *)
+let open_file_on_path_list path_list filename = 
+  let rec try_to_open acc p =
+    if (option_is_some acc) then acc else
+    open_file_on_path p filename
+  in
+  List.fold_left try_to_open None path_list
+
+(*f read_file_on_path_list - read a whole file in as a string *)
+let read_file_on_path_list path_list filename = 
+  let str_of_str_list l = List.fold_left (fun acc p -> sfmt "%s:%s" acc p) "" l in
+  match (open_file_on_path_list path_list filename) with
+    None -> Error (sfmt "Could not find file '%s' on path '%s'" filename (str_of_str_list path_list))
+  | Some f ->
+     let rec read acc =
+       try read (acc ^ (input_line f) ^ "\n")
+       with End_of_file -> close_in f ; acc
+     in
+     Ok (read "")
+
+(*f read_opt_file_on_path_list - read a whole file in as a string *)
+let read_opt_file_on_path_list path_list opt_filename = 
   if (option_is_none opt_filename) then (Ok (None)) else (
-    read_file (option_get opt_filename)
+    read_file_on_path_list path_list (option_get opt_filename)
     >>= fun src ->
     Ok (Some src)
   )
 
 (*a Gl_program module *)
 module Gl_program = struct
+    let shader_path_list = ref [""]
     type t = {
         prog_id     : int;
         attrib_ids  : (string * int) list;
@@ -77,6 +96,14 @@ module Gl_program = struct
         attribs : string list;
         uniforms : string list;
       }
+
+    (*f reset_shader_path *)
+    let reset_shader_path () = 
+      shader_path_list := []
+
+    (*f add_shader_path *)
+    let add_shader_path path = 
+      shader_path_list := path :: !shader_path_list
 
     (*f make_desc *)
     let make_desc ?tess_control_src ?tess_evaluation_src vertex_src fragment_src attribs uniforms = {tess_control_src; tess_evaluation_src; vertex_src; fragment_src; attribs; uniforms}
@@ -138,13 +165,13 @@ module Gl_program = struct
     let make desc =
       let attribs = desc.attribs in
       let uniforms = desc.uniforms in
-      read_opt_file desc.tess_control_src
+      read_opt_file_on_path_list !shader_path_list desc.tess_control_src
       >>= fun opt_tess_control_src ->
-      read_opt_file desc.tess_evaluation_src
+      read_opt_file_on_path_list !shader_path_list desc.tess_evaluation_src
       >>= fun opt_tess_evaluation_src ->
-      read_file desc.vertex_src
+      read_file_on_path_list !shader_path_list desc.vertex_src
       >>= fun vertex_src ->
-      read_file desc.fragment_src
+      read_file_on_path_list !shader_path_list desc.fragment_src
       >>= fun fragment_src ->
       compile_opt_shader opt_tess_control_src Gl.tess_control_shader
       >>= fun opt_tess_control_id ->

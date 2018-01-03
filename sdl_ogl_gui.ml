@@ -279,10 +279,10 @@ end
 
 (*a Toplevel *)
 (*f run_app *)
-let run_app ?width:(width=640) ?height:(height=400) ?title:(title="Untitled") (app:ogl_app) =
+let run_app ?width:(width=640) ?height:(height=400) ?title:(title="Untitled") ?ogl_root_dir:(ogl_root_dir="") (app:ogl_app) =
   Sdl_ogl_app.init app
   >>= fun sdl_app ->
-  (app#create)
+  (app#create ogl_root_dir)
   >>= fun () ->
   Sdl_ogl_app.event_loop sdl_app
   >>= fun () ->
