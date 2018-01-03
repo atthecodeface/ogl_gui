@@ -111,17 +111,22 @@ class ogl_obj_data =
       inherit Ogl_obj.ogl_obj as super
       val mutable angle=0.0;
       method create_geometry ~offset =
-        super#create_geometry_from_indices axis_indices [axis_vertices; axis_normals; axis_colors]
+        let vertex_attribute_buffers = [ (3, Gl.float, axis_vertices);
+                                         (3, Gl.float, axis_normals);
+                                         (3, Gl.float, axis_colors);
+                                       ] in
+        self#create_vao vertex_attribute_buffers;
+        self#add_indices_to_vao axis_indices;
+        Ok ()
       method draw other_uids =
         light.{0} <- 0.7 *. (sin angle);
         light.{1} <- 0.7 *. (cos angle);
         angle <- angle +. 0.002;
         Gl.uniform3fv other_uids.(2) 1 light;
-        let d _ = 
-           (*Gl.draw_elements Gl.triangles (num_faces*4) Gl.unsigned_short (`Offset 0);*)
-           Gl.draw_elements Gl.patches (num_faces*3) Gl.unsigned_short (`Offset 0);
-           ()
-        in self#bind_and_draw d
+        Gl.bind_vertex_array vao_glid;
+        Gl.draw_elements Gl.patches (num_faces*3) Gl.unsigned_short (`Offset 0);
+        Gl.bind_vertex_array 0;
+        ()
     end
 
 let trace pos = 
