@@ -100,33 +100,23 @@ let _ =
     set_pt 5 [ 1.; -1.;   1.;   1.; -1.;  1. ;  0.;0.8;0.5];
     set_pt 6 [-1.; -1.;   1.;  -1.; -1.;  1. ;  0.;0.8;0.8];
     set_pt 7 [-1.;  1.;   1.;  -1.;  1.;  1. ;  0.;0.5;0.8];
-    set_face 0  [0; 1; 3];
-    set_face 1  [1; 3; 2];
-    set_face 2  [3; 2; 7];
-    set_face 3  [2; 7; 6];
-    set_face 4  [7; 6; 4];
-    set_face 5  [6; 4; 5];
-    set_face 6  [4; 5; 0];
-    set_face 7  [5; 0; 1];
+    let pts_list = [|6;7;2;3;0;7;4;6;5;2;1;0;5;4|] in
+    for i = 0 to 11 do
+      set_face i [pts_list.(i);pts_list.(i+1);pts_list.(i+2);]
+    done
 
-    set_face 0  [0; 1; 2];
-    set_face 1  [1; 2; 5];
-    set_face 2  [2; 5; 0];
-    set_face 3  [5; 0; 4];
-    set_face 4  [0; 4; 3];
-    set_face 5  [4; 3; 5];
-    set_face 6  [4; 5; 0];
-    set_face 7  [5; 0; 1];
-    set_face 8  [0; 1; 3];
-    set_face 9  [1; 3; 2];
-
-
+let light = ba_floats [| (0.5); (0.5); (0.71)|]
 class ogl_obj_data =
     object (self)
       inherit Ogl_obj.ogl_obj as super
+      val mutable angle=0.0;
       method create_geometry ~offset =
         super#create_geometry_from_indices axis_indices [axis_vertices; axis_normals; axis_colors]
       method draw other_uids =
+        light.{0} <- 0.7 *. (sin angle);
+        light.{1} <- 0.7 *. (cos angle);
+        angle <- angle +. 0.002;
+        Gl.uniform3fv other_uids.(2) 1 light;
         let d _ = 
            (*Gl.draw_elements Gl.triangles (num_faces*4) Gl.unsigned_short (`Offset 0);*)
            Gl.draw_elements Gl.patches (num_faces*3) Gl.unsigned_short (`Offset 0);
@@ -228,13 +218,13 @@ class ogl_app_plot stylesheet ogl_displays : t_ogl_app =
     inherit Ogl_app.ogl_app stylesheet ogl_displays as super
     method create_shaders =
       super#create_shaders ;
-      let gl_program_desc = Gl_program.make_desc ~tess_control_src:"tess_control_example.glsl" ~tess_evaluation_src:"tess_eval_example.glsl" "vnc_vertex.glsl" "fragment.glsl" [] ["M"; "V"; "G"; "P";] in
+      let gl_program_desc = Gl_program.make_desc ~tess_control_src:"tess_control_example.glsl" ~tess_evaluation_src:"tess_eval_example.glsl" "vnc_tess_vertex.glsl" "fragment_color_normal.glsl" [] ["M"; "V"; "G"; "P"; "L";] in
       self#add_program "vnc_vertex" gl_program_desc >>= fun _ ->
       Ok ()
 
     method create_materials =
       super#create_materials ;
-      self#add_material "vnc_vertex" "vnc_vertex" [|"V"; "M"|] ;
+      self#add_material "vnc_vertex" "vnc_vertex" [|"V"; "M"; "L"|] ;
       Ok ()
 
   (*f button_pressed *)
