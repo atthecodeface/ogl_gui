@@ -4,6 +4,7 @@ class ogl_obj_geometry :
   int array ->
   Utils.float32_bigarray list ->
   object
+    inherit Ogl_obj.ogl_obj
     val mutable index_glid : int
     val mutable vao_glid : int
     val mutable vertex_data_glids : int list

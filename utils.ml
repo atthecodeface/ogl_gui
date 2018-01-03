@@ -112,6 +112,7 @@ let ba_floats fs  = Bigarray.(Array1.of_array float32 c_layout fs)
 let ba_uint8s is  = Bigarray.(Array1.of_array int8_unsigned c_layout is)
 let ba_string len = Bigarray.(Array1.create char c_layout len)
 let ba_int32_1    = Bigarray.(Array1.create int32 c_layout 1)
+let ba_int32s len = Bigarray.(Array1.create int32 c_layout len)
 let ba_float_array  len = Bigarray.(Array1.create float32 c_layout len)
 let ba_uint16_array len = Bigarray.(Array1.create int16_unsigned c_layout len)
 

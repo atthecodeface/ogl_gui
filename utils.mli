@@ -38,6 +38,9 @@ val ba_uint8s :
 val ba_string :
   int ->
   (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+val ba_int32s :
+  int ->
+  (int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t
 val ba_int32_1 :
   (int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t
 val ba_float_array :

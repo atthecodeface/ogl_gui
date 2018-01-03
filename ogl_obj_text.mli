@@ -4,6 +4,7 @@ class ogl_obj_text :
   Font.Outline.t ->
   string ->
   object
+    inherit Ogl_obj.ogl_obj
     val mutable draw_fn : unit -> unit
     val mutable index_glid : int
     val pts_tris : (float * float) list * (int * int * int) list

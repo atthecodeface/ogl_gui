@@ -36,6 +36,27 @@ class virtual ogl_obj  =
     val mutable vertex_data_glids = []
     val mutable opt_program : Ogl_program.Gl_program.t option = None
 
+    method create_vao (vertex_attribute_buffers: (int * Tgl4.Gl.enum * Utils.float32_bigarray) list) : unit Utils.ogl_result =
+        vao_glid <- gl_int_val (Gl.gen_vertex_arrays 1);
+        Gl.bind_vertex_array vao_glid;
+        Gl.enable_vertex_attrib_array 0; (* unnecessary here... *)
+        let num_attributes = List.length vertex_attribute_buffers in
+        let vbo_glids = ba_int32s num_attributes in
+        Gl.gen_buffers num_attributes vbo_glids;
+        let rec do_first n vab acc =
+          if (vab == []) then (acc) else (
+            let (num,typ,ba)::vab_tl = vab in
+            let glid = Int32.to_int (vbo_glids.{n}) in
+            Gl.bind_buffer Gl.array_buffer glid;
+            let size = Gl.bigarray_byte_size ba in
+            Gl.buffer_data Gl.array_buffer size (Some ba) Gl.static_draw;
+            Gl.vertex_attrib_pointer n num typ false 0 (`Offset 0);
+            do_first (n+1) vab_tl (glid::acc)
+          )
+        in 
+        vertex_data_glids <- (do_first 0 vertex_attribute_buffers []);
+        Ok () 
+
     (*f bind_and_draw - bind vao, index vbo, and two float3 vbos and call draw callback*)
     method private bind_and_draw (draw_fn:unit->unit) : unit =
       let bind_attrib id loc dim typ =
