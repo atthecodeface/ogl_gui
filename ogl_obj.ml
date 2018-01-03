@@ -39,7 +39,6 @@ class virtual ogl_obj  =
     method create_vao (vertex_attribute_buffers: (int * Tgl4.Gl.enum * Utils.float32_bigarray) list) : unit Utils.ogl_result =
         vao_glid <- gl_int_val (Gl.gen_vertex_arrays 1);
         Gl.bind_vertex_array vao_glid;
-        Gl.enable_vertex_attrib_array 0; (* unnecessary here... *)
         let num_attributes = List.length vertex_attribute_buffers in
         let vbo_glids = ba_int32s num_attributes in
         Gl.gen_buffers num_attributes vbo_glids;

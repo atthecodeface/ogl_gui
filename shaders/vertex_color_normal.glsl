@@ -33,6 +33,6 @@ out vec3 f_normal;
 
     f_color = vec4(color,1.0);
 
-    gl_Position = vec4(v_s.xyz, 1.2-v_s.z/2.0);
+    gl_Position = vec4(v_s.xyz, 1.2+v_s.z/2.0);
 
   }
