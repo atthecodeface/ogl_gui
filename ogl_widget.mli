@@ -258,6 +258,7 @@ class ogl_widget_viewer :
     val view : Atcflib.Matrix.t
     method add_child : ?order:int -> Ogl_types.t_ogl_widget -> unit
     method can_create : bool
+    method get_direction : Atcflib.Quaternion.t
     method create : Ogl_types.t_ogl_app -> unit Utils.ogl_result
     method create_geometry : unit
     method create_tree_styles : unit Utils.ogl_result

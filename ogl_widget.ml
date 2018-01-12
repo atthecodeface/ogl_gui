@@ -45,6 +45,8 @@ let create_stylesheet _ =
                                             ("align",   Sv_float_3 [|0.;0.;0.;|], false);
                                             ("faces",   Sv_int_6 [|0;0;0;0;0;0;|], false);
                                             ("fill",    Sv_int_3 [|0;0;0;|], false);
+                                            ("width",   Sv_float 0., false);
+                                            ("height",   Sv_float 0., false);
                                             ("face_color",   Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
                                             ("border_color", Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
                                             ("bg_color",     Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
@@ -75,11 +77,14 @@ let widget_text_styles = [ ("font_color", St_rgb);
                            ("font_height", St_float);
                            ("font_thickness", St_float);
     ] @ widget_base_styles
+let widget_display_styles = [ ("width", St_float);
+                               ("height", St_float);
+    ] @ widget_base_styles
 let stylable_widget_box_desc     = Stylable_desc.create [stylable_act_level] widget_base_styles
 let stylable_widget_grid_desc    = Stylable_desc.create [stylable_act_level] widget_grid_styles
 let stylable_widget_text_desc    = Stylable_desc.create [stylable_act_level] widget_text_styles
 let stylable_widget_viewer_desc  = Stylable_desc.create [stylable_act_level] widget_base_styles
-let stylable_widget_display_desc = Stylable_desc.create [stylable_act_level] widget_base_styles
+let stylable_widget_display_desc = Stylable_desc.create [stylable_act_level] widget_display_styles
 
 (*a OpenGL widget classes
   A widget represents a 3d box, with a possible thickness of 0 (which makes it 2D).
@@ -628,6 +633,8 @@ class ogl_widget_viewer stylesheet name_values  =
       idler_handle <- app#add_idler self#idle ;
       Ok ()
 
+    method get_direction = direction
+
     (*f create_geometry *)
     method create_geometry =
       List.iter (fun o -> ignore (o#create_geometry ~offset:(0.,0.,0.))) objs
@@ -761,6 +768,12 @@ object (self)
     if option_is_some toplevel_init then
      super#add_child (option_get toplevel_init) ;
     ()
+
+  method get_width_height =
+    let flt_width  = Stylable_value_ref.get_value_as_float (Stylable.get_value_ref self#get_stylable "width") in
+    let flt_height = Stylable_value_ref.get_value_as_float (Stylable.get_value_ref self#get_stylable "height") in
+    (max (int_of_float flt_width) 80, max (int_of_float flt_height) 80)
+
   method create app_init =
     Quaternion.assign_of_rotation (Vector.make3 0.1 0.9 0.1) (cos 0.003) (sin 0.003) playq2 ;
     app <- Some app_init ;

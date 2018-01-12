@@ -51,7 +51,6 @@ class virtual ogl_obj  =
             Gl.buffer_data Gl.array_buffer size (Some ba) Gl.static_draw;
             Gl.enable_vertex_attrib_array n;
             Gl.vertex_attrib_pointer n num typ false 0 (`Offset 0);
-            Printf.printf "\n\n\nCreated data glid %d:%d\n\n\n" n glid;
             do_first (n+1) vab_tl (glid::acc)
           )
         in 

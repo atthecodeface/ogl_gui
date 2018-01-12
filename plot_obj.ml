@@ -176,7 +176,7 @@ let trace pos =
  *)
 
 let app_xml = "<?xml?><app>
-<window dims='100,100,100' fill='3,3,3' border='1,1,1,1,1,1' border_color='0.3,0.3,0.3' align='0,1,0'>
+<window width='1000' height='800' dims='100,100,100' fill='3,3,3' border='1,1,1,1,1,1' border_color='0.3,0.3,0.3' align='0,1,0'>
   <grid fill='3,3,3' border='1,1,1,1,1,1' border_color='0.7,0.3,0.7' id='main_grid'>
     <grid_span axis='x' weights='1.0,0.0,0.0'/>
     <grid_span axis='y' weights='1.0,0'/>

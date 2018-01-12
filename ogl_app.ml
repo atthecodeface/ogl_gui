@@ -15,7 +15,7 @@ object (self)
   val mutable material_list:(string*Material.t) list = [];
   val mutable display_list:(string*t_ogl_display*t_window_handle) list = [];
   val mutable next_handle = 0;
-  val mutable create_window_fn = fun ~width ~height ~title handle -> Ok 0;
+  val mutable create_window_fn:t_create_window_fn = fun ~width ~height ~title handle -> Ok 0;
   val mutable window_displays : (t_window_handle * t_ogl_display) list = [];
   val mutable should_quit  = false;
   val mutable idler_list:(int*(unit -> int option)) list = [];
@@ -31,8 +31,9 @@ object (self)
     next_handle
 
   (*f create_window - call OS callback to create a window of certain width/height/title with a toplevel ogl_display, return a window handle *)
-  method create_window ?width:(width=0) ?height:(height=0) ?title:(title="") display = 
+  method create_window ?title:(title="") display = 
     let handle = self#get_next_handle in
+    let width,height = display#get_width_height in
     let wh = create_window_fn ~width:width ~height:height ~title:title handle in
     window_displays <- window_displays @ [(next_handle, display)];
     wh
@@ -73,16 +74,16 @@ object (self)
       in
       List.fold_left do_if_ok (Ok []) ogl_displays
     in
-    do_all_displays (fun od -> self#create_window ~width:800 ~height:600 ~title:"Display" od)
+    do_all_displays (fun od -> od#create_tree_styles)
+    >>= fun _ ->
+    ignore (Stylesheet.build stylesheet (List.map (fun od -> od#get_stylable) ogl_displays));
+    Stylesheet.apply_stylesheet stylesheet;
+    do_all_displays (fun od -> self#create_window ~title:"Display" od)
     >>= fun window_handles ->
     self#create_shaders
     >>= fun _ ->
     self#create_materials
     >>= fun _ ->
-    do_all_displays (fun od -> od#create_tree_styles)
-    >>= fun _ ->
-    ignore (Stylesheet.build stylesheet (List.map (fun od -> od#get_stylable) ogl_displays));
-    Stylesheet.apply_stylesheet stylesheet;
     do_all_displays (fun od -> od#create (self:>ogl_app))
     >>= fun _ ->
     List.iteri (fun i d -> self#add_display (sfmt "toplevel%d" i) d (List.nth window_handles i)) ogl_displays;
