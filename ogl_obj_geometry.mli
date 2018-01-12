@@ -15,6 +15,6 @@ class ogl_obj_geometry :
       (int, Bigarray.int8_unsigned_elt) Tgl4.Gl.bigarray ->
       Utils.float32_bigarray list -> unit Utils.ogl_result
     method delete_geometry : unit Utils.ogl_result
-    method draw : int array -> unit
-    method draw_subset : int -> int -> unit
+    method draw : Ogl_types.t_ogl_view_set -> int array -> unit
+    method draw_subset : Ogl_types.t_ogl_view_set -> int -> int -> unit
   end

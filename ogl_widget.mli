@@ -38,51 +38,14 @@ class ogl_widget_box :
   Stylesheet.Stylesheet.t ->
   (string * string) list ->
   object
-    method add_child : ?order:int -> Ogl_types.t_ogl_widget -> unit
-    method can_create : bool
-    method create : Ogl_types.t_ogl_app -> unit Utils.ogl_result
-    method create_tree_styles : unit Utils.ogl_result
-    method destroy : unit
-    method draw : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
-    method draw_content :
-      Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> Atcflib.Matrix.t -> unit
-    method get_app : Ogl_types.t_ogl_app
-    method get_children : Ogl_types.t_ogl_widget list
-    method get_content_desired_dims : float Utils.t_dims3
-    method get_content_draw_dims : float Utils.t_dims3
-    method get_depth : int
-    method get_desired_dims : float Utils.t_dims3
-    method get_id : string
-    method get_parent : Ogl_types.t_ogl_widget option
-    method get_stylable : Stylesheet.Stylable.t
-    method intersect_ray : Utils.Collider_ray.t -> float option
-    method key :
-      Ogl_types.t_key_action ->
-      int -> int -> Ogl_types.t_action_vector -> Ogl_types.t_key_result
-    method layout :
-      float Utils.t_dims3 -> Atcflib.Matrix.t -> float Utils.t_dims3 -> unit
-    method layout_content_with_dims :
-      float Utils.t_dims3 -> Atcflib.Matrix.t -> float Utils.t_dims3 -> unit
-    method layout_get_desired_dims : float Utils.t_dims3
-    method mouse :
-      Ogl_types.t_mouse_action ->
-      int ->
-      Ogl_types.t_action_vector -> int array -> Ogl_types.t_mouse_result
-    method name_value_args : (string * string) list -> unit
-    method request_redraw : unit
-    method set_depth : int -> unit
-    method set_layout :
-      float Utils.t_dims3 ->
-      Atcflib.Matrix.t -> float Utils.t_dims3 -> Atcflib.Matrix.t
-    method set_parent : Ogl_types.t_ogl_widget -> unit
-    method str : string
-    method style_change : Stylesheet.Stylable.t_style_change_callback
+    inherit ogl_widget
   end
 exception Bad_grid_layout of string
 class ogl_widget_grid :
   Stylesheet.Stylesheet.t ->
   (string * string) list ->
   object
+    inherit ogl_widget
     val mutable grid_base : int Utils.t_dims3 option
     val mutable grid_growth : float Utils.t_dims3 option
     val mutable grid_shrink : float Utils.t_dims3 option
@@ -95,17 +58,6 @@ class ogl_widget_grid :
     method create : Ogl_types.t_ogl_app -> unit Utils.ogl_result
     method create_tree_styles : unit Utils.ogl_result
     method destroy : unit
-    method draw : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
-    method draw_content : Ogl_types.t_ogl_app ->Ogl_types.t_ogl_display -> Atcflib.Matrix.t -> unit
-    method get_app : Ogl_types.t_ogl_app
-    method get_children : Ogl_types.t_ogl_widget list
-    method get_content_desired_dims : float Utils.t_dims3
-    method get_content_draw_dims : float Utils.t_dims3
-    method get_depth : int
-    method get_desired_dims : float Utils.t_dims3
-    method get_id : string
-    method get_parent : Ogl_types.t_ogl_widget option
-    method get_stylable : Stylesheet.Stylable.t
     method grid_build : unit
     method grid_desired_size : float array
     method grid_layout : Atcflib.Matrix.t -> unit
@@ -140,6 +92,7 @@ class ogl_widget_text :
   Stylesheet.Stylesheet.t ->
   (string * string) list ->
   object
+    inherit ogl_widget
     val mutable font : Font.Outline.t
     val mutable font_color : Animatable.Animatable_linear_float.t
     val mutable font_color_ref : Stylesheet.Stylable_value_ref.t
@@ -158,17 +111,6 @@ class ogl_widget_text :
     method create : Ogl_types.t_ogl_app -> unit Utils.ogl_result
     method create_tree_styles : unit Utils.ogl_result
     method destroy : unit
-    method draw : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
-    method draw_content : Ogl_types.t_ogl_app ->Ogl_types.t_ogl_display -> Atcflib.Matrix.t -> unit
-    method get_app : Ogl_types.t_ogl_app
-    method get_children : Ogl_types.t_ogl_widget list
-    method get_content_desired_dims : float Utils.t_dims3
-    method get_content_draw_dims : float Utils.t_dims3
-    method get_depth : int
-    method get_desired_dims : float Utils.t_dims3
-    method get_id : string
-    method get_parent : Ogl_types.t_ogl_widget option
-    method get_stylable : Stylesheet.Stylable.t
     method intersect_ray : Utils.Collider_ray.t -> float option
     method key :
       Ogl_types.t_key_action ->
@@ -239,9 +181,8 @@ class ogl_widget_viewer :
   Stylesheet.Stylesheet.t ->
   (string * string) list ->
   object
-    val centre_x : float ref
-    val centre_y : float ref
-    val centre_z : float ref
+    inherit ogl_widget
+    val center : Atcflib.Vector.t
     val direction : Atcflib.Quaternion.t
     val mutable draw_fn : 'a -> 'b -> unit
     val mutable idler_handle : int
@@ -258,23 +199,13 @@ class ogl_widget_viewer :
     val view : Atcflib.Matrix.t
     method add_child : ?order:int -> Ogl_types.t_ogl_widget -> unit
     method can_create : bool
+    method get_center : Atcflib.Vector.t
     method get_direction : Atcflib.Quaternion.t
     method create : Ogl_types.t_ogl_app -> unit Utils.ogl_result
     method create_geometry : unit
     method create_tree_styles : unit Utils.ogl_result
     method delete_geometry : unit
     method destroy : unit
-    method draw : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
-    method draw_content : Ogl_types.t_ogl_app ->Ogl_types.t_ogl_display -> Atcflib.Matrix.t -> unit
-    method get_app : Ogl_types.t_ogl_app
-    method get_children : Ogl_types.t_ogl_widget list
-    method get_content_desired_dims : float Utils.t_dims3
-    method get_content_draw_dims : float Utils.t_dims3
-    method get_depth : int
-    method get_desired_dims : float Utils.t_dims3
-    method get_id : string
-    method get_parent : Ogl_types.t_ogl_widget option
-    method get_stylable : Stylesheet.Stylable.t
     method private idle : unit -> int option
     method intersect_ray : Utils.Collider_ray.t -> float option
     method key :

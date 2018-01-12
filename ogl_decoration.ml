@@ -25,6 +25,7 @@ open Bigarray
 open Font
 open Utils
 open Animatable
+open Ogl_view
 open Ogl_types
 open Ogl_obj_standard
 open Ogl_program
@@ -204,12 +205,11 @@ object (self)
     ()
 
   (*f draw_border - draw the border (of size in last 'set_dims' centred on 0,0) using transform *)
-  val mutable angle = 0.;
   val mutable time = 0;
-  method draw_border (app:t_ogl_app) (display:t_ogl_display) =
+  method draw_border (view_set:t_ogl_view_set)=
     if ((option_is_none gl_obj) || (border_triangles=0)) then ()
     else
-     (let other_uids = display#set_material (app#get_material "widget_color") draw_transformation in
+     (let other_uids = Ogl_view.set view_set (Ogl_view.get_material view_set "widget_color") draw_transformation in
       if Animatable_linear_float.is_changing border_color then
          (Animatable_linear_float.time_step time border_color; time <- time + 1;);
 (*    else
@@ -218,21 +218,19 @@ object (self)
       let bg_rgb = Animatable_linear_float.get_value border_color in
       let (bg_r, bg_g, bg_b) = (bg_rgb.(0), bg_rgb.(1), bg_rgb.(2)) in
        Gl.uniform3f other_uids.(0) bg_r bg_g bg_b;
-       angle <- angle +. 0.01;
-       (option_get gl_obj)#draw_subset (bg_triangles*3) (border_triangles*3);
+       (option_get gl_obj)#draw_subset view_set (bg_triangles*3) (border_triangles*3);
        Gl.bind_vertex_array 0;
       ())
 
   (*f draw_background - draw the background (of size in last 'set_dims' centred on 0,0) using transform *)
-  method draw_background (app:t_ogl_app) (display:t_ogl_display) =
+  method draw_background (view_set:t_ogl_view_set) =
     if ((option_is_none gl_obj) || (bg_triangles=0)) then ()
     else
-      (let other_uids = display#set_material (app#get_material "widget_color") draw_transformation in
+     (let other_uids = Ogl_view.set view_set (Ogl_view.get_material view_set "widget_color") draw_transformation in
        let bg_rgb = face_color in
        let (bg_r, bg_g, bg_b) = (bg_rgb.(0), bg_rgb.(1), bg_rgb.(2)) in
        Gl.uniform3f other_uids.(0) bg_r bg_g bg_b;
-       angle <- angle +. 0.01;
-       (option_get gl_obj)#draw_subset 0 (bg_triangles*3);
+       (option_get gl_obj)#draw_subset view_set 0 (bg_triangles*3);
        Gl.bind_vertex_array 0;
       ())
 

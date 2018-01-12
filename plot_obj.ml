@@ -118,7 +118,7 @@ class ogl_obj_data =
         self#create_vao vertex_attribute_buffers;
         self#add_indices_to_vao axis_indices;
         Ok ()
-      method draw other_uids =
+      method draw view_set other_uids =
         light.{0} <- 0.7 *. (sin angle);
         light.{1} <- 0.7 *. (cos angle);
         angle <- angle +. 0.002;

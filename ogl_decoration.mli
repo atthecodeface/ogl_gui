@@ -6,7 +6,6 @@ open Ogl_types
 open Bigarray
 class ogl_decoration :
   object
-    val mutable angle : float
     val mutable bg_triangles : int
     val mutable border : float Utils.t_dims6
     val mutable border_color : Animatable_linear_float.t
@@ -26,8 +25,8 @@ class ogl_decoration :
     val tmp_vec_1 : Atcflib.Vector.t
     val mutable widget : Ogl_types.t_ogl_widget option
     method destroy : unit
-    method draw_background : Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
-    method draw_border :Ogl_types.t_ogl_app -> Ogl_types.t_ogl_display -> unit
+    method draw_background : Ogl_types.t_ogl_view_set -> unit
+    method draw_border :     Ogl_types.t_ogl_view_set -> unit
     method private generate_vertices : float Utils.t_dims3 -> float array
     method get_content_offset : float array
     method get_decoration_dims : float array

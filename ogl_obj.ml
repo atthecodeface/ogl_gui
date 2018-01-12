@@ -34,7 +34,7 @@ class virtual ogl_obj  =
     val mutable vao_glid = -1
     val mutable index_glid = -1
     val mutable vertex_data_glids = []
-    val mutable opt_program : Ogl_program.Gl_program.t option = None
+    val mutable opt_material : Ogl_program.Material.t option = None
 
     method create_vao (vertex_attribute_buffers: (int * Tgl4.Gl.enum * Utils.float32_bigarray) list) : unit Utils.ogl_result =
         vao_glid <- gl_int_val (Gl.gen_vertex_arrays 1);
@@ -94,12 +94,13 @@ class virtual ogl_obj  =
 
     (*f delete_geometry - delete vao and vbos *)
     method delete_geometry : unit ogl_result = 
-      gl_with_int (Gl.delete_vertex_arrays 1) vao_glid;
+      if (vao_glid != -1) then (gl_with_int (Gl.delete_vertex_arrays 1) vao_glid);
+      if (index_glid != -1) then (gl_delete_buffer index_glid);
       List.iter (fun glid -> gl_delete_buffer glid) vertex_data_glids;
       Ok ()
 
     (*f draw - must be supplied by concrete class *)
-    method virtual draw : int array -> unit
+    method virtual draw : t_ogl_view_set -> int array -> unit
 
     (*f create_geometry - must be supplied by concrete class *)
     method virtual create_geometry : offset:float*float*float -> unit ogl_result

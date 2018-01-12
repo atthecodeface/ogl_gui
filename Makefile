@@ -16,7 +16,7 @@ ATCFCMXA  := ${ATCFOCAML}/atcflib.cmx ${ATCFOCAML}/ocaml_atcflib.a
 
 OCAML_COMPILE := $(OCAMLFIND) ocamlopt
 
-PROGS := font.cmx sax.cmx stylesheet.cmx animatable.cmx ogl_program.cmx ogl_obj_standard.cmx ogl_obj_standard.cmi ogl_types.cmi ogl_layout.cmx ogl_decoration.cmx ogl_widget.cmx ogl_app.cmx sdl_ogl_gui.cmxa plot_obj
+PROGS := font.cmx sax.cmx stylesheet.cmx animatable.cmx ogl_program.cmx ogl_view.cmx ogl_obj_standard.cmx ogl_obj_standard.cmi ogl_types.cmi ogl_layout.cmx ogl_decoration.cmx ogl_widget.cmx ogl_app.cmx sdl_ogl_gui.cmxa plot_obj
 
 all:  $(PROGS) 
 
@@ -81,6 +81,12 @@ ogl_layout.cmx: ogl_layout.ml ogl_layout.mli utils.cmx ogl_types.cmi ${ATCFMXA}
 	@echo "Compile ogl_layout.ml to create .cmx and .o"
 	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_layout.ml
 
+ogl_view.cmx: ogl_view.ml ogl_view.mli utils.cmx ogl_types.cmi ${ATCFMXA}
+	@echo "Compile ogl_view.mli to create .cmi"
+	@$(OCAMLFIND) ocamlopt  -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_view.mli
+	@echo "Compile ogl_view.ml to create .cmx and .o"
+	@$(OCAMLFIND) ocamlopt -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_view.ml
+
 ogl_decoration.cmx: ogl_decoration.ml ogl_decoration.mli  ${ATCFMXA}
 	@echo "Compile ogl_decoration.mli to create .cmi"
 	@$(OCAMLFIND) ocamlopt  -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_decoration.mli
@@ -123,7 +129,7 @@ ogl_app.cmx: ogl_app.ml ogl_app.mli utils.cmx font.cmx ogl_obj_standard.cmxa ${A
 	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c ogl_app.ml
 
 
-SUBLIBRARIES := utils.cmx font.cmx stylesheet.cmx sax.cmx animatable.cmx ogl_program.cmx ogl_layout.cmx ogl_obj.cmx  ogl_obj_geometry.cmx ogl_obj_text.cmx ogl_obj_standard.cmx ogl_decoration.cmx ogl_widget.cmx ogl_app.cmx
+SUBLIBRARIES := utils.cmx font.cmx stylesheet.cmx sax.cmx animatable.cmx ogl_program.cmx ogl_view.cmx ogl_layout.cmx ogl_obj.cmx  ogl_obj_geometry.cmx ogl_obj_text.cmx ogl_obj_standard.cmx ogl_decoration.cmx ogl_widget.cmx ogl_app.cmx
 sdl_ogl_gui.cmxa: sdl_ogl_gui.ml sdl_ogl_gui.mli ${ATCFMXA} ${SUBLIBRARIES}
 	@echo "Compile sdl_ogl_gui.mli to create .cmi"
 	@$(OCAMLFIND) ocamlopt   -I ${ATCFOCAML} ${OGL_GUI_PACKAGES} -c sdl_ogl_gui.mli

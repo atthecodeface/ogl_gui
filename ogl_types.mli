@@ -70,7 +70,6 @@ type t_create_window_fn = width:int -> height:int -> title:string -> t_window_ha
   possibly an 'image' may be permitted which is a texture applied to a flat surface
  *)
 
-
 type t_action_vector = (Collider_ray.t * float) (* launch point + direction collider, action range *)
 type t_mouse_callback_result = McbNone | McbSome of (t_mouse_action -> int -> t_action_vector -> int array -> t_mouse_callback_result)
 type t_mouse_claimant = t_mouse_action -> int -> t_action_vector -> int array -> (t_mouse_callback_result)
@@ -78,7 +77,11 @@ type t_mouse_callback = t_mouse_action -> int -> t_action_vector -> int array ->
 type t_mouse_result = (float * t_mouse_callback) option
 type t_key_callback = t_key_action -> int -> int -> t_action_vector -> int option
 type t_key_result = (float * t_key_callback) option
-class type t_ogl_widget = 
+class type t_ogl_view_set = object
+  method get_app  : t_ogl_app
+  method get_display : t_ogl_display
+  end
+and t_ogl_widget = 
   object
     (* val children : ogl_widget list ;*)
     method name_value_args : (string * string) list -> unit
@@ -103,8 +106,8 @@ class type t_ogl_widget =
     method layout           : float t_dims3 -> Matrix.t -> float t_dims3 -> unit
     method layout_content_with_dims  : float t_dims3 -> Matrix.t -> float t_dims3 -> unit (* override with layout widget *)
     method set_layout       : float t_dims3 -> Matrix.t -> float t_dims3 -> Matrix.t
-    method draw             : t_ogl_app -> t_ogl_display -> unit (* app so that OpenGL may be interacted with *)
-    method draw_content     : t_ogl_app -> t_ogl_display -> Matrix.t -> unit (* app so that OpenGL may be interacted with *)
+    method draw             : t_ogl_view_set -> unit (* app so that OpenGL may be interacted with *)
+    method draw_content     : t_ogl_view_set -> Matrix.t -> unit (* app so that OpenGL may be interacted with *)
     method intersect_ray    : Collider_ray.t -> float option
     method key              : t_key_action -> int -> int -> t_action_vector -> t_key_result
     method mouse            : t_mouse_action -> int -> t_action_vector -> int array -> t_mouse_result
@@ -121,7 +124,7 @@ and t_ogl_display = (* Widget that is a whole openGL context - or possibly fract
   object
     inherit t_ogl_widget
     method get_width_height : int*int
-    method set_material : Ogl_program.Material.t -> Atcflib.Matrix.t -> int array
+    method set_material : Ogl_program.Material.t option -> Atcflib.Matrix.t -> int array
     method display_reshape : int -> int -> unit (* Reshapes the toplevel window *)
     method display_draw    : unit (* Draw the context; draw self and children with correct projection *)
     method display_key     : t_key_action -> int -> int -> int -> int -> int option

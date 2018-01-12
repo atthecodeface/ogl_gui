@@ -98,7 +98,7 @@ class ogl_obj_text ?size:(size=1.0) ?height:(height=1.0) (font:Font.Outline.t) (
       Ok ()
 
   (*f draw - super's draw with a callback of the create_geometry resultant draw function *)
-  method draw other_uids = self#bind_and_draw draw_fn
+  method draw view_set other_uids = self#bind_and_draw draw_fn
 
   (*f All done *)
 end

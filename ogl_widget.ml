@@ -31,6 +31,7 @@ open Ogl_program
 open Ogl_decoration
 open Ogl_layout
 open Ogl_obj
+open Ogl_view
 open Stylesheet
 let font_default = option_get (Font.Outline.load_json "cabin-bold")
 
@@ -309,15 +310,15 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
       internal_transformation
 
     (*f draw - draw the widget, decoration border first, then content, children, and planes *)
-    method draw app display =
+    method draw view_set =
       (* draw decoration *)
-      decoration#draw_border app display;
+      decoration#draw_border view_set;
       (* draw content *)
-      self#draw_content app display internal_transformation;
+      self#draw_content view_set internal_transformation;
       (* draw children *)
-      List.iter (fun c -> c#draw app display) children;
+      List.iter (fun c -> c#draw view_set) children;
       (* draw background *)
-      decoration#draw_background app display
+      decoration#draw_background view_set
 
     (*f get_content_desired_dims - get the xyz dimensions of the size of the content of the widget (override if a specific widget) *)
     method get_content_desired_dims = [|0.;0.;0.|]
@@ -326,7 +327,7 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
     method get_content_draw_dims = content_draw_dims
 
     (*f draw_content - draw the actual content of the widget (override if a specific widget) *)
-    method draw_content     app display transformation = () (* Draw content *)
+    method draw_content view_set transformation = () (* Draw content *)
 
     (*f key - handle a keypress along the action vector *)
     method key action k meta vector =
@@ -544,13 +545,13 @@ class ogl_widget_text stylesheet name_values =
     end
   method get_content_desired_dims = 
     text_dims
-  method draw_content app display transformation =
+  method draw_content view_set transformation =
     if (option_is_none obj) then ()
     else
-      (let other_uids = display#set_material (app#get_material "widget_color") transformation in
+      (let other_uids = Ogl_view.set view_set (Ogl_view.get_material view_set "widget_color") transformation in
       let rgb = Animatable_linear_float.get_value font_color in
       Gl.uniform3f other_uids.(0) rgb.(0) rgb.(1) rgb.(2);
-      (option_get obj)#draw other_uids;
+      (option_get obj)#draw view_set other_uids;
       Gl.bind_vertex_array 0;
       ())
 
@@ -568,7 +569,7 @@ class ogl_widget_text stylesheet name_values =
       let (cr,max_d) = vector in
       let opt_k = self#intersect_ray cr in
       match mouse_state with
-        0 -> (if ((action<>Mouse_action_motion) or (option_is_none opt_k)) then McbNone else
+        0 -> (if ((action<>Mouse_action_motion) || (option_is_none opt_k)) then McbNone else
                 (mouse_state <- 1;Stylable.set_element_state 0 2 self#get_stylable;Stylesheet.apply_stylesheet stylesheet;McbSome (self#mouse_action))
                  )
        | 1 -> (if (option_is_none opt_k) then
@@ -608,9 +609,7 @@ class ogl_widget_viewer stylesheet name_values  =
   val keys_down = ref Intset.empty
   val direction = Quaternion.make_rijk 1.0 0. 0. 0.
   val scale   = ref 1.
-  val centre_x  = ref 0.
-  val centre_y  = ref 0.
-  val centre_z  = ref 0.
+  val center = Vector.make3 0. 0. 0.
   val mutable idler_handle = -1
   val mutable draw_fn = let d a t = () in d
   val rotation = Matrix.make 4 4
@@ -634,6 +633,7 @@ class ogl_widget_viewer stylesheet name_values  =
       Ok ()
 
     method get_direction = direction
+    method get_center    = center
 
     (*f create_geometry *)
     method create_geometry =
@@ -650,22 +650,22 @@ class ogl_widget_viewer stylesheet name_values  =
       if (self#can_create) then self#create_geometry
 
     (*f draw_content *)
-    method draw_content app display transformation =
+    method draw_content view_set transformation =
       if (option_is_none opt_material) then () else
       begin    
         let material = (option_get opt_material) in
         ignore (Matrix.assign_from_q direction rotation);
         ignore (Matrix.identity translation);
-        ignore (Matrix.set 0 3 (-. !centre_x) translation);
-        ignore (Matrix.set 1 3 (-. !centre_y) translation);
-        ignore (Matrix.set 2 3 (-. !centre_z) translation);
-        ignore (Matrix.assign_m_m rotation translation tmp);
+        ignore (Matrix.set 0 3 (-. (Vector.get center 0)) translation);
+        ignore (Matrix.set 1 3 (-. (Vector.get center 1)) translation);
+        ignore (Matrix.set 2 3 (-. (Vector.get center 2)) translation);
+        ignore (Matrix.assign_m_m rotation translation view);
         let ar_scale = (min (super#get_content_draw_dims).(0) (super#get_content_draw_dims).(1)) *. 0.35 *. !scale in
-        ignore (Matrix.scale ar_scale tmp);  (* Make -1/1 fit the width *)
-        let other_uids = display#set_material material transformation in
-        Gl.uniform_matrix4fv other_uids.(0) 1 true (ba_of_matrix4 tmp); (* 0 -> V *)
+        ignore (Matrix.scale ar_scale view);  (* Make -1/1 fit the width *)
+        let other_uids = Ogl_view.set view_set (Some material) transformation in
+        Gl.uniform_matrix4fv other_uids.(0) 1 true (ba_of_matrix4 view); (* 0 -> V *)
         Gl.uniform_matrix4fv other_uids.(1) 1 true identity4; (* 1 -> M *)
-        List.iter (fun o -> o#draw other_uids) objs;
+        List.iter (fun o -> o#draw view_set other_uids) objs;
         Gl.bind_vertex_array 0;
       end
 
@@ -688,10 +688,9 @@ class ogl_widget_viewer stylesheet name_values  =
     method private move_forward scale = 
         ignore (Matrix.assign_from_q direction rotation);
         ignore (Matrix.scale scale rotation);
-        let z = Vector.coords (Matrix.row_vector rotation 2) in
-        centre_x := !centre_x +. (z.(0)) ;
-        centre_y := !centre_y +. (z.(1)) ;
-        centre_z := !centre_z +. (z.(2))
+        let z = (Matrix.row_vector rotation 2) in
+        ignore (Vector.add z center);
+        ()
 
     (*f idle *)
     method private idle _ = 
@@ -797,13 +796,13 @@ object (self)
     Gl.viewport 0 0 w h ;
     ()
 
-  method set_material material widget_transformation =
+  method set_material opt_material widget_transformation =
     let transformation = ba_of_matrix4 widget_transformation in
-    if ((option_is_none current_material) or (material != (option_get current_material))) then (
-      current_material <- Some material;
-      Material.set_projection material (ba_of_matrix4 projection) transformation
+    if ((option_is_none current_material) or (option_is_none opt_material) or ((option_get opt_material) != (option_get current_material))) then (
+      current_material <- opt_material;
+      Material.set_projection (option_get opt_material) (ba_of_matrix4 projection) transformation
     ) else (
-      Material.set_transformation material transformation
+      Material.set_transformation (option_get opt_material) transformation
     )
  
   method display_draw = 
@@ -815,7 +814,8 @@ object (self)
     Matrix.assign_from_q playq1 play1;
     Matrix.assign_m_m projection play1 play2; (* can set projection to be play2 *)
     current_material <- None;
-    self#draw (option_get app) (self :> t_ogl_display)
+    let view_set = Ogl_view.create (option_get app) (self :> t_ogl_display) (*display#set_material*) in
+    self#draw view_set
 
   method private initial_action_vector x y =
     ignore (Vector.(set 0 (float x) tmp_vector |>
