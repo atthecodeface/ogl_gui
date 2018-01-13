@@ -11,6 +11,7 @@ out vec4 f_color;
 out vec3 f_normal;
   void main()
   {
+#if 1
     mat4 VM;
     mat4 PG;
     vec4 v_w;
@@ -34,5 +35,17 @@ out vec3 f_normal;
     f_color = vec4(color,1.0);
 
     gl_Position = vec4(v_s.xyz, 1.2+v_s.z/2.0);
+#else
+    mat4 VM;
+    vec4 v_w;
+    vec4 v_v;
+ 
+    v_w = M*vec4(vertex,1.0);
+    v_v = V*v_w;
+    v_v.w = 1.0;
 
+    gl_Position = v_v;
+    f_normal = (M*vec4(normal,0.0)).xyz;
+    f_color = vec4(color,1.0);
+#endif
   }

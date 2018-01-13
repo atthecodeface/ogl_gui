@@ -692,10 +692,20 @@ class ogl_widget_viewer stylesheet name_values  =
         ignore (Vector.add z center);
         ()
 
+    (*f move_left *)
+    method private move_left scale = 
+        ignore (Matrix.assign_from_q direction rotation);
+        ignore (Matrix.scale scale rotation);
+        let z = (Matrix.row_vector rotation 0) in
+        ignore (Vector.add z center);
+        ()
+
     (*f idle *)
     method private idle _ = 
-      if Intset.mem (int_of_char 'l') !keys_down then self#move_forward (-0.001);
-      if Intset.mem (int_of_char ',') !keys_down then self#move_forward 0.001;
+      if Intset.mem (int_of_char ',') !keys_down then self#move_forward ((-0.01) /. !scale);
+      if Intset.mem (int_of_char 'l') !keys_down then self#move_forward (0.01 /. !scale);
+      if Intset.mem (int_of_char 'q') !keys_down then self#move_left ((-0.01) /. !scale);
+      if Intset.mem (int_of_char 'w') !keys_down then self#move_left (0.01 /. !scale);
       if Intset.mem (int_of_char '.') !keys_down then self#pitch 0.005;
       if Intset.mem (int_of_char ';') !keys_down then self#pitch (-0.005);
       if Intset.mem (int_of_char 'x') !keys_down then self#yaw 0.005;

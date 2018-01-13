@@ -26,6 +26,8 @@ val raise_any_error :
 val option_is_none : 'a option -> bool
 val option_is_some : 'a option -> bool
 val option_get : 'a option -> 'a
+val option_get_default : 'a option -> 'a -> 'a
+val option_apply : ('a -> 'b) -> 'b -> 'a option -> 'b
 val ( >>= ) :
   ('a, 'b) Result.result ->
   ('a -> ('c, 'b) Result.result) -> ('c, 'b) Result.result

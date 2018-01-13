@@ -104,6 +104,8 @@ let raise_any_error res =
 let option_is_none o = match o with None -> true | Some _ -> false
 let option_is_some o = match o with None -> false | Some _ -> true
 let option_get     x = match x with Some p -> p | None -> raise Not_found
+let option_get_default o default = match o with None -> default | Some x -> x
+let option_apply f d o = match o with None -> d | Some x -> f x
 
 (*f >>= standard monadic function *)
 let ( >>= ) x f = match x with Ok v -> f v | Error _ as e -> e
