@@ -50,6 +50,9 @@ val ba_float_array :
 val ba_uint16_array :
   int ->
   (int, Bigarray.int16_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+val ba_uint8_array :
+  int ->
+  (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 val gl_int_val :
   ((int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t -> 'a) ->
   int

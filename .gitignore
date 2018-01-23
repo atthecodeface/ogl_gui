@@ -1,0 +1,10 @@
+*~
+*pyc
+*.o
+*.a
+*.cmt
+*.cmi
+*.cmti
+*.cmx
+*.cmxa
+
