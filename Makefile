@@ -11,8 +11,8 @@ OCAMLC     = $(SETPATH) $(OCAMLROOT)/ocamlc
 
 ATCFDIR := /Users/gavinprivate/Git/atcflib
 ATCFOCAML := ${ATCFDIR}/ocaml
-LIBPATH := DYLD_LIBRARY_PATH=.:${ATCFDIR}:${ATCFOCAML}
-ATCFCMXA  := ${ATCFOCAML}/atcflib.cmx ${ATCFOCAML}/ocaml_atcflib.a
+#LIBPATH := DYLD_LIBRARY_PATH=.:${ATCFDIR}:${ATCFOCAML}
+#ATCFCMXA  := ${ATCFOCAML}/atcflib.cmx ${ATCFOCAML}/ocaml_atcflib.a
 
 OCAMLFINDOPT := $(OCAMLFIND) ocamlopt -bin-annot
 
@@ -29,13 +29,13 @@ show_mli:
 #.PHONY: create_index
 #create_index: ./create_index
 
-DEVANAL_PACKAGES := -linkpkg -package bigarray,re -thread
+DEVANAL_PACKAGES := -linkpkg -package atcflib,bigarray,re -thread
 
-OGL_GUI_PACKAGES := -linkpkg -package bigarray,re,tgls,tgls.tgl4,tsdl,yojson -thread
+OGL_GUI_PACKAGES := -linkpkg -package bigarray,re,tgls,tgls.tgl4,tsdl,yojson,atcflib -thread
 
-UTILS_PACKAGES := -linkpkg -package bigarray,re,tgls,tgls.tgl4,tsdl,yojson -thread
+UTILS_PACKAGES := -linkpkg -package atcflib,bigarray,re,tgls,tgls.tgl4,tsdl,yojson -thread
 
-MKPNG_PACKAGES := -linkpkg -package imagelib,re
+MKPNG_PACKAGES := -linkpkg -package atcflib,imagelib,re
 
 utils.cmx: utils.ml utils.mli
 	@echo "Compile utils.mli to create .cmi"
