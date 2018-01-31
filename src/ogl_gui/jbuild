@@ -1,0 +1,22 @@
+(jbuild_version 1)
+
+(copy_files# utils/*)
+(copy_files# sax/*)
+(copy_files# animatable/*)
+(copy_files# font/*)
+(copy_files# stylesheet/*)
+(copy_files# ogl_layout/*)
+(copy_files# ogl_types/*)
+(copy_files# ogl_program/*)
+(copy_files# ogl_obj/*)
+(copy_files# ogl_widget/*)
+(copy_files# ogl_app/*)
+
+(library (
+  (name ogl_gui)
+  (public_name ogl_gui)
+  (wrapped true)
+  (libraries 
+    (bigarray tgls tgls.tgl4 yojson result atcflib)
+  )
+))
