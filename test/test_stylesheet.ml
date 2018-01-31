@@ -31,11 +31,6 @@
 open Ogl_gui
 
 (*a Helper functions *)
-(*f option_is_some/is_none/get *)
-let option_is_none o = match o with None -> true | Some _ -> false
-let option_is_some o = match o with None -> false | Some _ -> true
-let option_get     x = match x with Some p -> p | None -> raise Not_found
-
 (*f sfmt <string format> <arg> * -> string
  *    formats a string with arguments
  *)
@@ -63,34 +58,37 @@ let assert_equal_int msg v0 v1 =
  *)
 class type t_widget = 
   object
-    method get_styleable : Stylesheet.Styleable.t
+    method get_styleable : Stylesheet.t_styleable
     method set_parent : t_widget -> unit
     method get_parent : t_widget option
 (*    method styleable_callback : Stylesheet.Styleable.t -> unit*)
   end
 
+(*v activity level, checked *)
 let wact_level = ("activity_level" , [ ("disable",0); ("enable",1); ("hover",2); ("pressed",3);])
 let wchecked   = ("checked",         [("checked",0); ("checked",1);])
 
-(*v widget_*_styles *)
+(*v widget_decorator_styles *)
 let widget_decorator_styles = [ ("padding", Styleable_value.St_float_6);
-                         ("margin",  Styleable_value.St_float_6);
-                         ("border",  Styleable_value.St_float_6);
-                         ("faces",   Styleable_value.St_int_6);
-                         ("border_color", Styleable_value.St_rgb );
-                         ("face_color", Styleable_value.St_rgb );
-             ]
+                                ("margin",  Styleable_value.St_float_6);
+                                ("border",  Styleable_value.St_float_6);
+                                ("faces",   Styleable_value.St_int_6);
+                                ("border_color", Styleable_value.St_rgb );
+                                ("face_color", Styleable_value.St_rgb );
+                              ]
+
+(*v widget_base_styles, widget_base_desc *)
+let widget_base_styles = widget_decorator_styles @ [ ("dims", St_float_3);
+                                                     ("offset", St_float_3 );
+                                                   ]
+let widget_base_desc   = Stylesheet.create_desc [] widget_base_styles
+
 (*c widget_base *)
-let widget_base_styles = widget_decorator_styles @ [ ("dims", St_float_3); (* dims INCLUDING margin/border/padding - CSS box model *)
-    (* relative size too? *)
-                      ("offset", St_float_3 );
-             ]
-let widget_base_desc   = Stylesheet.Styleable_desc.create [] widget_base_styles
 class widget_base stylesheet (name_values : (string * string) list) widget_type styleable_desc : t_widget  = 
 object (self)
     val mutable parent : t_widget option = None
     val styleable = 
-      Stylesheet.Styleable.create styleable_desc stylesheet widget_type name_values (fun e -> ()) []
+      Stylesheet.se_create styleable_desc stylesheet widget_type name_values (fun e -> ()) []
 
 (*    initializer
       Stylesheet.Styleable.set_callback styleable self#styleable_callback
@@ -102,7 +100,7 @@ object (self)
 
     (*f set_parent - set the parent widget for this widget *)
     method set_parent widget = 
-      Stylesheet.Styleable.set_parent widget#get_styleable styleable;
+      Stylesheet.se_set_parent widget#get_styleable styleable;
       parent <- Some widget
 
     (*f get_parent - get the parent widget that has been set *)
@@ -112,7 +110,7 @@ end
 
 (*c widget_grid *)
 let widget_grid_styles = widget_base_styles
-let widget_grid_desc = Stylesheet.Styleable_desc.create [wact_level; wchecked] widget_grid_styles
+let widget_grid_desc = Stylesheet.create_desc [wact_level; wchecked] widget_grid_styles
 class widget_grid stylesheet (name_values : (string * string) list) = 
 object (self)
   inherit widget_base stylesheet name_values "grid" widget_grid_desc as super
@@ -122,39 +120,39 @@ end
 let widget_text_styles = widget_base_styles @ [ ("font_size", St_float);
                            ("font_thickness", St_float );
              ]
-let widget_text_label_desc = Stylesheet.Styleable_desc.create [] widget_text_styles
+let widget_text_label_desc = Stylesheet.create_desc [] widget_text_styles
 class widget_text_label stylesheet (name_values : (string * string) list) = 
 object (self)
   inherit widget_base stylesheet name_values "text_label" widget_text_label_desc as super
 end
 
 (*c widget_text_button *)
-let widget_text_button_desc = Stylesheet.Styleable_desc.create [wact_level] widget_text_styles
+let widget_text_button_desc = Stylesheet.create_desc [wact_level] widget_text_styles
 class widget_text_button stylesheet (name_values : (string * string) list) = 
 object (self)
   inherit widget_base stylesheet name_values "text_button" widget_text_button_desc as super
 end
 
 (*c widget_text_checkbutton *)
-let widget_text_checkbutton_desc = Stylesheet.Styleable_desc.create [wact_level; wchecked] widget_text_styles
+let widget_text_checkbutton_desc = Stylesheet.create_desc [wact_level; wchecked] widget_text_styles
 class widget_text_checkbutton stylesheet (name_values : (string * string) list) = 
 object (self)
   inherit widget_base stylesheet name_values "text_checkbutton" widget_text_checkbutton_desc as super
 end
 
 (*v stylesheet *)
-let sel_cbox          =  Stylesheet.Styleable.is_element_id "control"
-let sel_type_button   =  Stylesheet.Styleable.is_element_type "text_button"
-let sel_cls_rotate    =  Stylesheet.Styleable.has_element_class "rotate"
-let sel_state_hover   =  Stylesheet.Styleable.is_element_state 0 2
-let sel_state_enable  =  Stylesheet.Styleable.is_element_state 0 1
+let sel_cbox          =  Stylesheet.se_is_element_id "control"
+let sel_type_button   =  Stylesheet.se_is_element_type "text_button"
+let sel_cls_rotate    =  Stylesheet.se_has_element_class "rotate"
+let sel_state_hover   =  Stylesheet.se_is_element_state 0 2
+let sel_state_enable  =  Stylesheet.se_is_element_state 0 1
 
 let sel_button_rotate = fun e -> (sel_type_button e) && (sel_cls_rotate e)
 let sel_hover_button  = fun e -> (sel_type_button e) && (sel_state_hover e)
 
-let stylesheet = Stylesheet.Stylesheet.create ()
+let stylesheet = Stylesheet.create ()
 let _ =
-    Stylesheet.Stylesheet.add_style_defaults stylesheet [
+    Stylesheet.add_style_defaults stylesheet [
         ("border", Styleable_value.Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
         ("padding", Styleable_value.Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
         ("margin", Styleable_value.Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
@@ -167,10 +165,10 @@ let _ =
         ("font_size",    Styleable_value.Sv_float 0., false);
         ("font_thickness", Styleable_value.Sv_float 0., false);
       ];
-    Stylesheet.Stylesheet.add_style_rule stylesheet [sel_cbox; sel_hover_button]
+    Stylesheet.add_style_rule stylesheet [sel_cbox; sel_hover_button]
              [("border_color", Styleable_value.Sv_rgb [|1.;1.;1.;|]);
              ];
-    Stylesheet.Stylesheet.add_style_rule stylesheet [sel_cbox; sel_type_button]
+    Stylesheet.add_style_rule stylesheet [sel_cbox; sel_type_button]
              [("border", Styleable_value.Sv_float_6 [|2.;2.;2.;2.;2.;2.;|]);
              ];
     ()
@@ -198,10 +196,10 @@ let styles = [ ("border", Styleable_value.St_float_6);
                ("border_color", Styleable_value.St_rgb );
              ]
 
-let box_style_desc        = Stylesheet.Styleable_desc.create box_state_desc        styles
-let label_style_desc      = Stylesheet.Styleable_desc.create label_state_desc      styles
-let button_style_desc     = Stylesheet.Styleable_desc.create button_state_desc     styles
-let chk_button_style_desc = Stylesheet.Styleable_desc.create chk_button_state_desc styles
+let box_style_desc        = Stylesheet.create_desc box_state_desc        styles
+let label_style_desc      = Stylesheet.create_desc label_state_desc      styles
+let button_style_desc     = Stylesheet.create_desc button_state_desc     styles
+let chk_button_style_desc = Stylesheet.create_desc chk_button_state_desc styles
 
 let print_id e = Printf.printf "id %s\n" e.Stylesheet.Styleable.id_name
 
@@ -218,7 +216,7 @@ let _ =
 let test_me _ =
   let root = [wbox_0#get_styleable] in
   let cbk_matching = Stylesheet.Stylesheet.element_callback_matching_tree stylesheet in
-  ignore (Stylesheet.Stylesheet.build stylesheet root);
+  ignore (Stylesheet.build stylesheet root);
   Printf.printf "Printing all objects\n";
   ignore (cbk_matching (fun e -> true) print_id);
   Printf.printf "Printing all buttons\n";
@@ -226,18 +224,18 @@ let test_me _ =
   Printf.printf "Printing all items with id 'control' = should just be the one box\n";
   ignore (cbk_matching sel_cbox print_id);
   Printf.printf "Applying stylesheet\n";  
-  Stylesheet.Stylesheet.apply_stylesheet stylesheet;
+  Stylesheet.apply stylesheet;
   Printf.printf "Applying stylesheet again\n";  
-  Stylesheet.Stylesheet.apply_stylesheet stylesheet;
-  Printf.printf "wlbl_0 border %s\n" (Styleable_value.str_of_svalue (Styleable_value.Styleable_value_ref.get_value (Stylesheet.Styleable.get_value_ref wlbl_0#get_styleable "border" )));
+  Stylesheet.apply stylesheet;
+  Printf.printf "wlbl_0 border %s\n" (Styleable_value.str_of_svalue (Stylesheet.se_get_value wlbl_0#get_styleable "border" ));
 (*
   Printf.printf "wlbl_0 border color %s\n" (Styleable_value.str_of_svalue (Stylesheet.Styleable.get_value "border_color" wlbl_0#get_styleable));
   Printf.printf "wlbt_2 border %s\n" (Styleable_value.str_of_svalue (Stylesheet.Styleable.get_value "border" wlbt_2#get_styleable));
   Printf.printf "wlbt_2 border color %s\n" (Styleable_value.str_of_svalue (Stylesheet.Styleable.get_value "border_color" wlbt_2#get_styleable));
  *)
-  Stylesheet.Styleable.set_element_state 0 2 (wlbt_2#get_styleable);
+  Stylesheet.se_set_element_state 0 2 (wlbt_2#get_styleable);
   Printf.printf "Applying stylesheet again\n";  
-  Stylesheet.Stylesheet.apply_stylesheet stylesheet;
+  Stylesheet.apply stylesheet;
 (*
   Printf.printf "wlbl_0 border %s\n" (str_of_svalue (Stylesheet.Styleable.get_value "border" wlbl_0#get_styleable));
   Printf.printf "wlbl_0 border color %s\n" (str_of_svalue (Stylesheet.Styleable.get_value "border_color" wlbl_0#get_styleable));

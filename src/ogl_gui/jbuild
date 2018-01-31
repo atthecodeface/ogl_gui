@@ -17,6 +17,6 @@
   (public_name ogl_gui)
   (wrapped true)
   (libraries 
-    (bigarray tgls tgls.tgl4 yojson result atcflib)
+    (batteries bigarray tgls tgls.tgl4 yojson result atcflib)
   )
 ))

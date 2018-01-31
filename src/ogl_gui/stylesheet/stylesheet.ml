@@ -308,6 +308,10 @@ module Styleable_value =
     (*v svr_zero - default null value reference *)
     let svr_zero = Styleable_value_ref.create ()
                                              
+    let ref_value            = Styleable_value_ref.get_value
+    let ref_value_as_floats  = Styleable_value_ref.get_value_as_floats
+    let ref_value_as_float   = Styleable_value_ref.get_value_as_float
+    let ref_value_as_ints    = Styleable_value_ref.get_value_as_ints
 end
     
 (*a Style_id_hash, Style_id, Style_ids, Style, Styleable_desc - immutable after construction, but could be fully immutable *)
@@ -940,7 +944,25 @@ module Stylesheet =
        (*f All done *)
        end
 
-       let get_value_ref = Styleable.get_value_ref
-       let get_value     = Styleable.get_value
+       type t_stylesheet  = Stylesheet.t
+       type t_styleable   = Styleable.t
+
+       let create_desc         = Styleable_desc.create
+
+       let se_create              = Styleable.create
+       let se_get_value_ref       = Styleable.get_value_ref
+       let se_get_value           = Styleable.get_value
+       let se_set_element_state   = Styleable.set_element_state
+       let se_set_parent          = Styleable.set_parent
+       let se_is_element_id       = Styleable.is_element_id
+       let se_is_element_state    = Styleable.is_element_state
+       let se_is_element_type     = Styleable.is_element_type
+       let se_has_element_class   = Styleable.has_element_class
+
+       let build               = Stylesheet.build
+       let apply               = Stylesheet.apply_stylesheet
+       let create              = Stylesheet.create
+       let add_style_defaults  = Stylesheet.add_style_defaults
+       let add_style_rule      = Stylesheet.add_style_rule
 
 end
