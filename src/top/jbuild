@@ -1,12 +1,11 @@
 (jbuild_version 1)
 
 (library (
-  (name sdl_ogl_gui_top)
-;  (public_name sdl_ogl_gui_top)
+  (name ogl_gui_top)
   (wrapped false)
   (modes (byte))
   (flags (:standard -safe-string))
   (libraries (
-    sdl_ogl_gui
+    ogl_gui
   ))
 ))

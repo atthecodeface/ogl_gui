@@ -187,7 +187,7 @@ module Outline = struct
 
     (*f load_json *)
     let load_json filename = 
-      let json = Yojson.Basic.from_file (filename^".oftj") in
+      let json = Yojson.Basic.from_file ("fonts/"^filename^".oftj") in
       match json with
         `Assoc fd_g ->
         let font_data  = assoc_assoc json "font_data" [] in
