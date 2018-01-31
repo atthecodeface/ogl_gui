@@ -1,0 +1,15 @@
+(jbuild_version 1)
+
+(executable (
+  (name test_suite)
+  (libraries (
+    alcotest
+    ogl_gui
+  ))
+))
+
+(alias (
+  (name    run_test)
+  (deps    (test_suite.exe))
+  (action  (run ${<}))
+))

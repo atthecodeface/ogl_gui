@@ -9,6 +9,9 @@ top:
 clean:
 	jbuilder clean
 
+test:
+	jbuilder build @run_test
+
 build:
 	jbuilder build
 

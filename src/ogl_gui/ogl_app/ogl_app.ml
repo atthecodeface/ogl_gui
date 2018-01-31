@@ -76,8 +76,8 @@ object (self)
     in
     do_all_displays (fun od -> od#create_tree_styles)
     >>= fun _ ->
-    ignore (Stylesheet.build stylesheet (List.map (fun od -> od#get_stylable) ogl_displays));
-    Stylesheet.apply_stylesheet stylesheet;
+    ignore (Stylesheet.Stylesheet.build stylesheet (List.map (fun od -> od#get_styleable) ogl_displays));
+    Stylesheet.Stylesheet.apply_stylesheet stylesheet;
     do_all_displays (fun od -> self#create_window ~title:"Display" od)
     >>= fun window_handles ->
     self#create_shaders
@@ -213,7 +213,7 @@ module Builder = struct
   type t = 
     {
       app_creator : (ogl_widget_display list) -> ogl_app;
-      stylesheet : Stylesheet.t;
+      stylesheet : Stylesheet.Stylesheet.t;
       xml_additions : (string * (t -> string -> (string * string) list -> unit) ) list;
       mutable widget_stack : (string * Sax.attribute list) list;
       mutable children_stack : stack_entry list;

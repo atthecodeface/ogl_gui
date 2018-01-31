@@ -1,7 +1,7 @@
 open Utils
 open Atcflib
-open Stylesheet
 open Ogl_program
+open Stylesheet
 
 (*a Class types for OpenGL widget, app and display, which are interrelated *)
 (*t Enmerations *)
@@ -97,11 +97,11 @@ and t_ogl_widget =
     method get_children : t_ogl_widget list
     method get_depth : int
     method set_depth : int -> unit
-    method get_stylable : Stylable.t
+    method get_styleable : Stylesheet.Styleable.t
     method get_content_desired_dims : float t_dims3
     method get_content_draw_dims    : float t_dims3
     method get_desired_dims : float t_dims3
-    method style_change : Stylable.t_style_change_callback
+    method style_change : Stylesheet.Styleable.t_style_change_callback
     method layout_get_desired_dims : float t_dims3  (* override with layout widget *)
     method layout           : float t_dims3 -> Matrix.t -> float t_dims3 -> unit
     method layout_content_with_dims  : float t_dims3 -> Matrix.t -> float t_dims3 -> unit (* override with layout widget *)

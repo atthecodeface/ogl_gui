@@ -36,55 +36,55 @@ let font_default = option_get (Font.Outline.load_json "cabin-bold")
 
 (*a Stylesheet things *)
 let create_stylesheet _ = 
-  let stylesheet = Stylesheet.create () in
-  Stylesheet.add_style_defaults stylesheet [("border",  Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
-                                            ("padding", Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
-                                            ("margin",  Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
-                                            ("dims",    Sv_float_3 [|0.;0.;0.;|], false);
-                                            ("offset",  Sv_float_3 [|0.;0.;0.;|], false);
-                                            ("align",   Sv_float_3 [|0.;0.;0.;|], false);
-                                            ("faces",   Sv_int_6 [|0;0;0;0;0;0;|], false);
-                                            ("fill",    Sv_int_3 [|0;0;0;|], false);
-                                            ("width",   Sv_float 0., false);
-                                            ("height",   Sv_float 0., false);
-                                            ("face_color",   Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
-                                            ("border_color", Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
-                                            ("bg_color",     Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
-                                            ("font_size",    Sv_float 1., true); (* inherit *)
-                                            ("font_height",    Sv_float 0., true); (* inherit *)
-                                            ("font_thickness", Sv_float 0., true); (* inherit *)
-                                            ("font_color",    Sv_rgb [|1.;1.;1.;|], true); (* inherit *)
+  let stylesheet = Stylesheet.Stylesheet.create () in
+  Stylesheet.Stylesheet.add_style_defaults stylesheet [("border",  Styleable_value.Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
+                                            ("padding", Styleable_value.Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
+                                            ("margin",  Styleable_value.Sv_float_6 [|0.;0.;0.;0.;0.;0.;|], false);
+                                            ("dims",    Styleable_value.Sv_float_3 [|0.;0.;0.;|], false);
+                                            ("offset",  Styleable_value.Sv_float_3 [|0.;0.;0.;|], false);
+                                            ("align",   Styleable_value.Sv_float_3 [|0.;0.;0.;|], false);
+                                            ("faces",   Styleable_value.Sv_int_6 [|0;0;0;0;0;0;|], false);
+                                            ("fill",    Styleable_value.Sv_int_3 [|0;0;0;|], false);
+                                            ("width",   Styleable_value.Sv_float 0., false);
+                                            ("height",   Styleable_value.Sv_float 0., false);
+                                            ("face_color",   Styleable_value.Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
+                                            ("border_color", Styleable_value.Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
+                                            ("bg_color",     Styleable_value.Sv_rgb [|0.;0.;0.;|], true); (* inherit *)
+                                            ("font_size",    Styleable_value.Sv_float 1., true); (* inherit *)
+                                            ("font_height",    Styleable_value.Sv_float 0., true); (* inherit *)
+                                            ("font_thickness", Styleable_value.Sv_float 0., true); (* inherit *)
+                                            ("font_color",    Styleable_value.Sv_rgb [|1.;1.;1.;|], true); (* inherit *)
                                            ];
     stylesheet
 
-let widget_decorator_styles = [ ("padding", St_float_6);
-                         ("margin",  St_float_6);
-                         ("border",  St_float_6);
-                         ("faces",   St_int_6);
-                         ("border_color", St_rgb );
-                         ("face_color", St_rgb );
+let widget_decorator_styles = [ ("padding", Styleable_value.St_float_6);
+                         ("margin",  Styleable_value.St_float_6);
+                         ("border",  Styleable_value.St_float_6);
+                         ("faces",   Styleable_value.St_int_6);
+                         ("border_color", Styleable_value.St_rgb );
+                         ("face_color", Styleable_value.St_rgb );
              ]
-let widget_base_styles = widget_decorator_styles @ [ ("dims", St_float_3);
+let widget_base_styles = widget_decorator_styles @ [ ("dims", Styleable_value.St_float_3);
 (* dims INCLUDING margin/border/padding - CSS box model *)
-                      ("fill", St_int_3 );
-                      ("align", St_float_3 );
-                      ("offset", St_float_3 );
+                      ("fill", Styleable_value.St_int_3 );
+                      ("align", Styleable_value.St_float_3 );
+                      ("offset", Styleable_value.St_float_3 );
              ]
-let stylable_act_level =  ("activity_level" , [ ("disable",0); ("enable",1); ("hover",2); ("pressed",3);])
+let styleable_act_level =  ("activity_level" , [ ("disable",0); ("enable",1); ("hover",2); ("pressed",3);])
 let widget_grid_styles = widget_base_styles
-let widget_text_styles = [ ("font_color", St_rgb);
-                           ("font_size", St_float);
-                           ("font_height", St_float);
-                           ("font_thickness", St_float);
+let widget_text_styles = [ ("font_color", Styleable_value.St_rgb);
+                           ("font_size", Styleable_value.St_float);
+                           ("font_height", Styleable_value.St_float);
+                           ("font_thickness", Styleable_value.St_float);
     ] @ widget_base_styles
-let widget_display_styles = [ ("width", St_float);
-                               ("height", St_float);
+let widget_display_styles = [ ("width", Styleable_value.St_float);
+                               ("height", Styleable_value.St_float);
     ] @ widget_base_styles
-let stylable_widget_box_desc     = Stylable_desc.create [stylable_act_level] widget_base_styles
-let stylable_widget_grid_desc    = Stylable_desc.create [stylable_act_level] widget_grid_styles
-let stylable_widget_text_desc    = Stylable_desc.create [stylable_act_level] widget_text_styles
-let stylable_widget_viewer_desc  = Stylable_desc.create [stylable_act_level] widget_base_styles
-let stylable_widget_display_desc = Stylable_desc.create [stylable_act_level] widget_display_styles
+let styleable_widget_box_desc     = Stylesheet.Styleable_desc.create [styleable_act_level] widget_base_styles
+let styleable_widget_grid_desc    = Stylesheet.Styleable_desc.create [styleable_act_level] widget_grid_styles
+let styleable_widget_text_desc    = Stylesheet.Styleable_desc.create [styleable_act_level] widget_text_styles
+let styleable_widget_viewer_desc  = Stylesheet.Styleable_desc.create [styleable_act_level] widget_base_styles
+let styleable_widget_display_desc = Stylesheet.Styleable_desc.create [styleable_act_level] widget_display_styles
 
 (*a OpenGL widget classes
   A widget represents a 3d box, with a possible thickness of 0 (which makes it 2D).
@@ -112,7 +112,7 @@ let stylable_widget_display_desc = Stylable_desc.create [stylable_act_level] wid
 
  *)
 (*c ogl_widget, the base class  *)
-class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget = 
+class ogl_widget stylesheet styleable_desc widget_type name_values : t_ogl_widget = 
   
   object (self)
     val mutable parent : t_ogl_widget option = None
@@ -134,7 +134,7 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
     and a 'animate update (last_time, time_now)'.
 
      *)
-    val mutable opt_stylable = None
+    val mutable opt_styleable = None
     val mutable is_button = false (* true => permit hover and pressed activity levels through mouse interaction *)
     val mutable bbox_draw_dims    = [|0.;0.;0.|]; (* Dimensions provided by layout *)
     val mutable bbox_draw_offset  = [|0.;0.;0.|]; (* Dimensions provided by layout *)
@@ -150,9 +150,9 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
 
     val mutable depth = 0;
 
-    val mutable dims_ref       = svr_zero;
-    val mutable fill_ref       = svr_zero;
-    val mutable align_ref      = svr_zero; (* -1.0 -> left, 0 center, 1.0 -> right *)
+    val mutable dims_ref       = Styleable_value.svr_zero;
+    val mutable fill_ref       = Styleable_value.svr_zero;
+    val mutable align_ref      = Styleable_value.svr_zero; (* -1.0 -> left, 0 center, 1.0 -> right *)
 
     val mutable dims     : (float t_dims3)          = [|0.;0.;0.|] 
     val mutable fill     : (int t_dims3)            = [|0;0;0;|]
@@ -169,11 +169,11 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
         acc >>= fun () -> child#create_tree_styles
       in
       List.fold_left create_if_ok (Ok ()) children >>= fun _ ->
-      let stylable_children = List.map (fun w -> w#get_stylable) children in
-      let stylable = Stylable.create stylable_desc stylesheet widget_type name_values (self#style_change) stylable_children in
-      opt_stylable <- Some stylable;
-      id <- sfmt "%s.%s" (Stylable.get_type stylable) (Stylable.get_id stylable);
-      List.iter (fun w -> Stylable.set_parent stylable w#get_stylable) children;
+      let styleable_children = List.map (fun w -> w#get_styleable) children in
+      let styleable = Styleable.create styleable_desc stylesheet widget_type name_values (self#style_change) styleable_children in
+      opt_styleable <- Some styleable;
+      id <- sfmt "%s.%s" (Styleable.get_type styleable) (Styleable.get_id styleable);
+      List.iter (fun w -> Styleable.set_parent styleable w#get_styleable) children;
       Ok ()
 
     (*f create - create children, and set up layout and decorations, returning error if required *)
@@ -183,13 +183,13 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
         acc >>= fun () -> child#create app_init
       in
       List.fold_left create_if_ok (Ok ()) children >>= fun _ ->
-      let stylable = self#get_stylable in
-      dims_ref  <- Stylable.get_value_ref stylable "dims" ;
-      fill_ref  <- Stylable.get_value_ref stylable "fill" ;
-      align_ref <- Stylable.get_value_ref stylable "align" ;
-      dims <- Stylable_value_ref.get_value_as_floats dims_ref;
-      align <- Stylable_value_ref.get_value_as_floats align_ref;
-      fill <- Stylable_value_ref.get_value_as_ints fill_ref;
+      let styleable = self#get_styleable in
+      dims_ref  <- Styleable.get_value_ref styleable "dims" ;
+      fill_ref  <- Styleable.get_value_ref styleable "fill" ;
+      align_ref <- Styleable.get_value_ref styleable "align" ;
+      dims <- Styleable_value.Styleable_value_ref.get_value_as_floats dims_ref;
+      align <- Styleable_value.Styleable_value_ref.get_value_as_floats align_ref;
+      fill <- Styleable_value.Styleable_value_ref.get_value_as_ints fill_ref;
       decoration#register_widget (self :> t_ogl_widget)
 
     (*f style_change *)
@@ -225,8 +225,8 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
     (*f get_depth - get the depth of the widget in the tree *)
     method get_depth = depth
 
-    (*f get_stylable - get the Stylable that the widget is *)
-    method get_stylable = (option_get opt_stylable)
+    (*f get_styleable - get the Styleable that the widget is *)
+    method get_styleable = (option_get opt_styleable)
 
     (*f set_parent - set the parent widget for this widget *)
     method set_parent widget = 
@@ -376,7 +376,7 @@ class ogl_widget stylesheet stylable_desc widget_type name_values : t_ogl_widget
 (*c ogl_widget_box  *)
 class ogl_widget_box stylesheet name_values =
   object (self)
-    inherit ogl_widget stylesheet stylable_widget_box_desc "box" name_values  as super
+    inherit ogl_widget stylesheet styleable_widget_box_desc "box" name_values  as super
   end
 
 (*c ogl_widget_grid  *)
@@ -391,7 +391,7 @@ class ogl_widget_grid stylesheet name_values =
   val mutable placement : (float t_dims3) option   = None
   val spans = [|Span.create (); Span.create (); Span.create (); |]
 
-    inherit ogl_widget stylesheet stylable_widget_grid_desc "grid" name_values  as super
+    inherit ogl_widget stylesheet styleable_widget_grid_desc "grid" name_values  as super
 
   (*f all_dims - invoke a function for all 3 dimensions *)
   method all_dims f =
@@ -497,12 +497,12 @@ class ogl_widget_grid stylesheet name_values =
 (*c ogl_widget_text  *)
 class ogl_widget_text stylesheet name_values =
   object (self)
-    inherit ogl_widget stylesheet stylable_widget_text_desc "text" name_values   as super
+    inherit ogl_widget stylesheet styleable_widget_text_desc "text" name_values   as super
     val mutable text = "not banana";
-    val mutable font_size_ref       = svr_zero;
-    val mutable font_height_ref     = svr_zero;
-    val mutable font_thickness_ref  = svr_zero;
-    val mutable font_color_ref      = svr_zero;
+    val mutable font_size_ref       = Styleable_value.svr_zero;
+    val mutable font_height_ref     = Styleable_value.svr_zero;
+    val mutable font_thickness_ref  = Styleable_value.svr_zero;
+    val mutable font_color_ref      = Styleable_value.svr_zero;
     val mutable font_size           = 0.;
     val mutable font_height         = 0.;
     val mutable font_thickness      = 0.; (* Currently not supported by ogl_obj_text *)
@@ -513,14 +513,14 @@ class ogl_widget_text stylesheet name_values =
 
   method create app =
     super#create app ;
-    font_color_ref     <- Stylable.get_value_ref self#get_stylable "font_color" ;
-    font_size_ref      <- Stylable.get_value_ref self#get_stylable "font_size" ;
-    font_height_ref    <- Stylable.get_value_ref self#get_stylable "font_height" ;
-    font_thickness_ref <- Stylable.get_value_ref self#get_stylable "font_thickness" ;
-    font_size          <- Stylable_value_ref.get_value_as_float font_size_ref;
-    font_height        <- Stylable_value_ref.get_value_as_float font_height_ref;
-    font_thickness     <- Stylable_value_ref.get_value_as_float font_thickness_ref;
-    Animatable_linear_float.set_value font_color (Stylable_value_ref.get_value_as_floats font_color_ref);
+    font_color_ref     <- Styleable.get_value_ref self#get_styleable "font_color" ;
+    font_size_ref      <- Styleable.get_value_ref self#get_styleable "font_size" ;
+    font_height_ref    <- Styleable.get_value_ref self#get_styleable "font_height" ;
+    font_thickness_ref <- Styleable.get_value_ref self#get_styleable "font_thickness" ;
+    font_size          <- Styleable_value.Styleable_value_ref.get_value_as_float font_size_ref;
+    font_height        <- Styleable_value.Styleable_value_ref.get_value_as_float font_height_ref;
+    font_thickness     <- Styleable_value.Styleable_value_ref.get_value_as_float font_thickness_ref;
+    Animatable_linear_float.set_value font_color (Styleable_value.Styleable_value_ref.get_value_as_floats font_color_ref);
     self#set_text text;
     Ok ()
 
@@ -557,7 +557,7 @@ class ogl_widget_text stylesheet name_values =
     (*f style_change *)
     method style_change sid_svs =
       if (self#can_create) then (
-        Animatable_linear_float.set_value font_color (Stylable_value_ref.get_value_as_floats font_color_ref);
+        Animatable_linear_float.set_value font_color (Styleable_value.Styleable_value_ref.get_value_as_floats font_color_ref);
         super#style_change sid_svs;
       );
       ()
@@ -569,20 +569,20 @@ class ogl_widget_text stylesheet name_values =
       let opt_k = self#intersect_ray cr in
       match mouse_state with
         0 -> (if ((action<>Mouse_action_motion) || (option_is_none opt_k)) then McbNone else
-                (mouse_state <- 1;Stylable.set_element_state 0 2 self#get_stylable;Stylesheet.apply_stylesheet stylesheet;McbSome (self#mouse_action))
+                (mouse_state <- 1;Styleable.set_element_state 0 2 self#get_styleable;Stylesheet.Stylesheet.apply_stylesheet stylesheet;McbSome (self#mouse_action))
                  )
        | 1 -> (if (option_is_none opt_k) then
-              (mouse_state <- 0;Stylable.set_element_state 0 1 self#get_stylable;Stylesheet.apply_stylesheet stylesheet;McbNone)
+              (mouse_state <- 0;Styleable.set_element_state 0 1 self#get_styleable;Stylesheet.Stylesheet.apply_stylesheet stylesheet;McbNone)
             else if (action=Mouse_action_down) then
-             (mouse_state <- 2;Stylable.set_element_state 0 3 self#get_stylable;Stylesheet.apply_stylesheet stylesheet;McbSome (self#mouse_action))
+             (mouse_state <- 2;Styleable.set_element_state 0 3 self#get_styleable;Stylesheet.Stylesheet.apply_stylesheet stylesheet;McbSome (self#mouse_action))
             else (McbSome (self#mouse_action))
            )
        | 2 -> (if (option_is_none opt_k) then
-              (mouse_state <- 0;Stylable.set_element_state 0 1 self#get_stylable;Stylesheet.apply_stylesheet stylesheet;McbNone)
+              (mouse_state <- 0;Styleable.set_element_state 0 1 self#get_styleable;Stylesheet.Stylesheet.apply_stylesheet stylesheet;McbNone)
             else if (action=Mouse_action_up) then
               (
                 (self#get_app)#button_pressed (self:>t_ogl_widget);
-                mouse_state <- 1;Stylable.set_element_state 0 2 self#get_stylable;Stylesheet.apply_stylesheet stylesheet;McbSome (self#mouse_action))
+                mouse_state <- 1;Styleable.set_element_state 0 2 self#get_styleable;Stylesheet.Stylesheet.apply_stylesheet stylesheet;McbSome (self#mouse_action))
             else (McbSome (self#mouse_action))
            )
        | _ -> McbNone
@@ -604,7 +604,7 @@ module Ordint = struct type t=int let compare a b = Pervasives.compare a b end
 module Intset=Set.Make(Ordint)
 class ogl_widget_viewer stylesheet name_values  = 
   object (self)
-    inherit ogl_widget stylesheet stylable_widget_viewer_desc "viewer" name_values  as super
+    inherit ogl_widget stylesheet styleable_widget_viewer_desc "viewer" name_values  as super
   val keys_down = ref Intset.empty
   val direction = Quaternion.make_rijk 1.0 0. 0. 0.
   val scale   = ref 1.
@@ -759,7 +759,7 @@ let screen_depth_mm = 100. (* 10cm deep in, 10 cm out *)
 
 class ogl_widget_display stylesheet name_values (toplevel_init:t_ogl_widget option): t_ogl_display = 
 object (self)
-  inherit ogl_widget stylesheet stylable_widget_display_desc "display" name_values  as super
+  inherit ogl_widget stylesheet styleable_widget_display_desc "display" name_values  as super
   val mutable toplevel_widget : t_ogl_widget option = toplevel_init
   val mutable app : t_ogl_app option = None
   val projection = Matrix.make 4 4
@@ -778,8 +778,8 @@ object (self)
     ()
 
   method get_width_height =
-    let flt_width  = Stylable_value_ref.get_value_as_float (Stylable.get_value_ref self#get_stylable "width") in
-    let flt_height = Stylable_value_ref.get_value_as_float (Stylable.get_value_ref self#get_stylable "height") in
+    let flt_width  = Styleable_value.Styleable_value_ref.get_value_as_float (Styleable.get_value_ref self#get_styleable "width") in
+    let flt_height = Styleable_value.Styleable_value_ref.get_value_as_float (Styleable.get_value_ref self#get_styleable "height") in
     (max (int_of_float flt_width) 80, max (int_of_float flt_height) 80)
 
   method create app_init =

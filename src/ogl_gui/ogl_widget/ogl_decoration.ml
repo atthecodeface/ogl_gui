@@ -30,6 +30,7 @@ open Ogl_types
 open Ogl_obj
 open Ogl_program
 open Stylesheet
+module Styleable = Stylesheet.Styleable
 
 (*a OpenGL widget decoration class - could use module for this, but be
 consistent Separating it out from the widget allows for future
@@ -55,11 +56,11 @@ object (self)
   val mutable border  : (float t_dims6) = [|0.;0.;0.;0.;0.;0.|]
   val mutable border_color  = Animatable_linear_float.create [|0.;0.;0.;|]
   val mutable face_color    = [|0.;0.;0.|]
-  val mutable padding_ref      = svr_zero;
-  val mutable margin_ref       = svr_zero;
-  val mutable border_ref       = svr_zero;
-  val mutable border_color_ref = svr_zero;
-  val mutable face_color_ref   = svr_zero;
+  val mutable padding_ref      = Styleable_value.svr_zero;
+  val mutable margin_ref       = Styleable_value.svr_zero;
+  val mutable border_ref       = Styleable_value.svr_zero;
+  val mutable border_color_ref = Styleable_value.svr_zero;
+  val mutable face_color_ref   = Styleable_value.svr_zero;
   val draw_transformation = Matrix.(identity (make 4 4))
   val mutable widget = None;
   val mutable gl_obj : ogl_obj_geometry option= None;
@@ -72,27 +73,27 @@ object (self)
     SHOULD BECOME CREATE *)
   method register_widget (w:t_ogl_widget) : unit ogl_result =
     widget <- Some w;
-    padding_ref <- Stylable.get_value_ref w#get_stylable "padding" ;
-    margin_ref  <- Stylable.get_value_ref w#get_stylable "margin" ;
-    border_ref  <- Stylable.get_value_ref w#get_stylable "border" ;
-    border_color_ref <- Stylable.get_value_ref w#get_stylable "border_color" ;
-    face_color_ref   <- Stylable.get_value_ref w#get_stylable "face_color" ;
-    border  <- Stylable_value_ref.get_value_as_floats border_ref;
-    margin  <- Stylable_value_ref.get_value_as_floats margin_ref;
-    padding <- Stylable_value_ref.get_value_as_floats padding_ref;
-    Animatable_linear_float.set_value border_color (Stylable_value_ref.get_value_as_floats border_color_ref);
-    face_color   <- Stylable_value_ref.get_value_as_floats face_color_ref;
+    padding_ref <- Styleable.get_value_ref w#get_styleable "padding" ;
+    margin_ref  <- Styleable.get_value_ref w#get_styleable "margin" ;
+    border_ref  <- Styleable.get_value_ref w#get_styleable "border" ;
+    border_color_ref <- Styleable.get_value_ref w#get_styleable "border_color" ;
+    face_color_ref   <- Styleable.get_value_ref w#get_styleable "face_color" ;
+    border  <- Styleable_value.Styleable_value_ref.get_value_as_floats border_ref;
+    margin  <- Styleable_value.Styleable_value_ref.get_value_as_floats margin_ref;
+    padding <- Styleable_value.Styleable_value_ref.get_value_as_floats padding_ref;
+    Animatable_linear_float.set_value border_color (Styleable_value.Styleable_value_ref.get_value_as_floats border_color_ref);
+    face_color   <- Styleable_value.Styleable_value_ref.get_value_as_floats face_color_ref;
     Ok ()
 
   (*f destroy *)
   method destroy = ()
 
   (*f style_change *)
-  method style_change (sid_svs:(Style_id.t * t_stylable_value) list) =
+  method style_change (sid_svs:(Style_id.t * Styleable_value.t_styleable_value) list) =
     if (option_is_some widget) then (* created *)
     (
-        Animatable_linear_float.set_value border_color (Stylable_value_ref.get_value_as_floats border_color_ref);
-        face_color   <- Stylable_value_ref.get_value_as_floats face_color_ref;
+        Animatable_linear_float.set_value border_color (Styleable_value.Styleable_value_ref.get_value_as_floats border_color_ref);
+        face_color   <- Styleable_value.Styleable_value_ref.get_value_as_floats face_color_ref;
     );
     ()
 
