@@ -27,7 +27,7 @@ open Utils
 open Animatable
 open Ogl_view
 open Ogl_types
-open Ogl_obj_standard
+open Ogl_obj
 open Ogl_program
 open Stylesheet
 

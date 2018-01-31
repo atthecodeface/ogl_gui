@@ -1,0 +1,11 @@
+(jbuild_version 1)
+
+(library (
+  (name ogl_texture)
+  (modules (ogl_texture))
+  (libraries (
+    tgls atcflib
+    utils
+    ogl_types
+  ))
+))

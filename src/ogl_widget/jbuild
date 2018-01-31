@@ -1,0 +1,13 @@
+(jbuild_version 1)
+
+(library (
+  (name ogl_widget)
+  (modules (ogl_view ogl_decoration ogl_widget))
+  (libraries (
+    animatable
+    font
+    ogl_types
+    ogl_layout
+    ogl_obj
+  ))
+))

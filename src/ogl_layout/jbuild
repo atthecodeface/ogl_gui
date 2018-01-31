@@ -1,0 +1,10 @@
+(jbuild_version 1)
+
+(library (
+  (name ogl_layout)
+  (modules (ogl_layout))
+  (libraries (
+    font
+    ogl_types
+  ))
+))

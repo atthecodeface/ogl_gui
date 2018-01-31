@@ -1,0 +1,13 @@
+(jbuild_version 1)
+
+(library (
+  (name sdl_ogl_gui)
+  (public_name sdl_ogl_gui)
+  (modules (sdl_ogl_gui))
+  (libraries (
+    stylesheet
+    ogl_types
+    ogl_widget
+    ogl_app
+  ))
+))

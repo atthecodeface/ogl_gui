@@ -26,7 +26,6 @@ open Font
 open Utils
 open Animatable
 open Ogl_types
-open Ogl_obj_standard
 open Ogl_program
 open Ogl_decoration
 open Ogl_layout

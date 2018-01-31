@@ -23,7 +23,7 @@ open Tgl4
 open Result
 open Bigarray
 open Font
-open Ogl_obj
+open Ogl_obj_base
 open Utils
 
 (*a OpenGL object classes *)

@@ -21,7 +21,7 @@
 open Atcflib
 open Tgl4
 open Utils
-open Ogl_obj
+open Ogl_obj_base
 
 (*a OpenGL object classes *)
 (*c ogl_obj_geometry - N elements given vertices, colors and indices *)

@@ -1,0 +1,9 @@
+(jbuild_version 1)
+
+(library (
+  (name ogl_types)
+  (libraries (
+    stylesheet
+    ogl_program
+  ))
+))

@@ -1,0 +1,11 @@
+(jbuild_version 1)
+
+(library 
+ (
+ (name font)
+ (modules (font))
+  (libraries
+    (uchar yojson sax)
+  )
+ )
+)

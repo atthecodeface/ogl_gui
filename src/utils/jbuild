@@ -1,0 +1,11 @@
+(jbuild_version 1)
+
+(library 
+ (
+ (name utils)
+ (modules (utils))
+  (libraries
+    (bigarray tgls tgls.tgl4 result atcflib)
+  )
+ )
+)

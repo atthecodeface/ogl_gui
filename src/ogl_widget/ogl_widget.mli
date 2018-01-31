@@ -103,7 +103,7 @@ class ogl_widget_text :
     val mutable font_thickness : float
     val mutable font_thickness_ref : Stylesheet.Stylable_value_ref.t
     val mutable mouse_state : int
-    val mutable obj : Ogl_obj_standard.ogl_obj_text option
+    val mutable obj : Ogl_obj.ogl_obj_text option
     val mutable text : string
     val mutable text_dims : float Utils.t_dims3
     method add_child : ?order:int -> Ogl_types.t_ogl_widget -> unit
