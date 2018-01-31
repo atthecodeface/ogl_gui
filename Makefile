@@ -1,3 +1,5 @@
+.PHONY: test clean build
+
 all:
 	@echo "Use 'make build' to build the library"
 	@echo "Use 'make install' to build and install the library using opam"
