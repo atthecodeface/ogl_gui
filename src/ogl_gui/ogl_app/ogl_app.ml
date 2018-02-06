@@ -408,7 +408,7 @@ module Builder = struct
       String.concat "\n" (List.rev (read []))
     in
     let app_xml = (read_file app_xml_file) in
-    Printf.printf "%s\n" app_xml ;
+    (*Printf.printf "%s\n" app_xml ;*)
     create_app_from_xml app_xml stylesheet xml_additions app_creator
 
     (*f All done *)

@@ -36,6 +36,8 @@ module Texture = struct
     Gl.tex_parameteri Gl.texture_2d Gl.texture_mag_filter Gl.linear;
     Gl.tex_parameteri Gl.texture_2d Gl.texture_wrap_s Gl.mirrored_repeat;
     Gl.tex_parameteri Gl.texture_2d Gl.texture_wrap_t Gl.mirrored_repeat;
+    Gl.tex_parameteri Gl.texture_2d Gl.texture_wrap_s Gl.clamp_to_edge;
+    Gl.tex_parameteri Gl.texture_2d Gl.texture_wrap_t Gl.clamp_to_edge;
     gl_id
 
 end

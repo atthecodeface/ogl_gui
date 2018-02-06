@@ -205,9 +205,9 @@ module Span = struct
       let (tgw, tsw) = (set_cell_size_weights 0 0. 0.) in
       t.total_weight_grow <- tgw;
       t.total_weight_shrink <- tsw;
-      Printf.printf "base_size of span:";
+      (*Printf.printf "base_size of span:";*)
       Array.iteri (fun i sae -> (Printf.printf "%d:%f " i sae.base_start);()) span_array;
-      Printf.printf "Size %f total_grow %f total_shrink %f\n%!" t.span_size tgw tsw;
+      (*Printf.printf "Size %f total_grow %f total_shrink %f\n%!" t.span_size tgw tsw;*)
       t.span_size
 
   (*f draw_size_span_array - get draw sizes and starts based on draw size dimension
@@ -259,7 +259,7 @@ module Span = struct
       let display_cells n sae =
         Printf.printf "cell %d base %f/%f draw %f/%f\n%!" n sae.base_start sae.base_size sae.draw_start sae.draw_size
       in
-      Array.iteri display_cells span_array;
+      (*Array.iteri display_cells span_array;*)
       Array.iteri draw_size_cells span_array
 
   (*f All done *)

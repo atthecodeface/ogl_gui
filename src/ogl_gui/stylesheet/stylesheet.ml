@@ -452,8 +452,10 @@ module Stylesheet =
             sids=Array.of_list (List.fold_left fn [] desc.Styleable_desc.styles);
           }
         in
+        (*
         Printf.printf "Bind to ids\n";
         Array.iter (fun sid -> Printf.printf "%s\n" (Style_id.str sid)) t.sids;
+         *)
         t
 
       (*f find_sid_index  *)
@@ -674,7 +676,7 @@ module Stylesheet =
               None -> ()
             | Some sid_index -> (
               let stype = Style_id.get_type sid in
-              Printf.printf "Set default value of %s.%s.%s to be %s\n" t.id_name t.type_name name value;
+              (*Printf.printf "Set default value of %s.%s.%s to be %s\n" t.id_name t.type_name name value;*)
               Styleable_value.Styleable_value_ref.set_default_from_string t.values.(sid_index) stype value
             )
           )
@@ -905,7 +907,7 @@ module Stylesheet =
              Style.add_styling sid svalue def_inherit t.default_style
            in
            List.iter add_id_and_style nvis;
-           Printf.printf "Default %s\n" (Style.str t.default_style);
+           (*Printf.printf "Default %s\n" (Style.str t.default_style);*)
            ()
 
          (*f get_default_value *)

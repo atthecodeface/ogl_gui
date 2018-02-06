@@ -64,6 +64,13 @@ class virtual ogl_obj  =
         Gl.bind_buffer Gl.element_array_buffer index_glid;
         Gl.buffer_data Gl.element_array_buffer size (Some indices) Gl.static_draw;
         ()
+      method add_indices32_to_vao (indices:Utils.int32_bigarray) =
+        Gl.bind_vertex_array vao_glid;
+        index_glid <- gl_int_val (Gl.gen_buffers 1);
+        let size     = Gl.bigarray_byte_size indices in
+        Gl.bind_buffer Gl.element_array_buffer index_glid;
+        Gl.buffer_data Gl.element_array_buffer size (Some indices) Gl.static_draw;
+        ()
     (*f bind_and_draw - bind vao, index vbo, and two float3 vbos and call draw callback*)
     method private bind_and_draw (draw_fn:unit->unit) : unit =
       let bind_attrib id loc dim typ =
