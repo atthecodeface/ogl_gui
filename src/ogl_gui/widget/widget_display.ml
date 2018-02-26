@@ -32,6 +32,8 @@ open Obj
 open Ogl_view
 open Stylesheet
 module Styleable = Stylesheet.Styleable
+
+(*a Styling *)
 let widget_display_styles = [ ("width", Styleable_value.St_float);
                                ("height", Styleable_value.St_float);
     ] @ Widget_base.widget_base_styles
