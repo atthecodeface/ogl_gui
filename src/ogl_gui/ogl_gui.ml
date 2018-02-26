@@ -15,11 +15,11 @@ module App        = App
 module AppBuilder = App_builder.Builder
 
 class  ogl_obj_geometry = Obj.ogl_obj_geometry
-class virtual  ogl_obj          = Obj.ogl_obj
+class virtual  ogl_obj  = Obj.ogl_obj
 
 class  ogl_widget = Widget.ogl_widget
 
 class  ogl_app    = App.ogl_app
 
-let create_stylesheet = Widget.create_stylesheet
+let create_stylesheet = Styling.create_stylesheet
 

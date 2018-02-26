@@ -27,24 +27,9 @@ open Utils
 open Animatable
 open Ogl_types
 open Ogl_view
+open Styling
 open Stylesheet
 module Styleable = Stylesheet.Styleable
-
-(*a Stylesheet things *)
-let widget_decorator_styles = [ ("padding", Styleable_value.St_float_6);
-                         ("margin",  Styleable_value.St_float_6);
-                         ("border",  Styleable_value.St_float_6);
-                         ("faces",   Styleable_value.St_int_6);
-                         ("border_color", Styleable_value.St_rgb );
-                         ("face_color", Styleable_value.St_rgb );
-             ]
-let widget_base_styles = widget_decorator_styles @ [ ("dims", Styleable_value.St_float_3);
-(* dims INCLUDING margin/border/padding - CSS box model *)
-                      ("fill", Styleable_value.St_int_3 );
-                      ("align", Styleable_value.St_float_3 );
-                      ("offset", Styleable_value.St_float_3 );
-             ]
-let styleable_act_level =  ("activity_level" , [ ("disable",0); ("enable",1); ("hover",2); ("pressed",3);])
 
 (*a OpenGL base widget class
   A widget represents a 3d box, with a possible thickness of 0 (which makes it 2D).

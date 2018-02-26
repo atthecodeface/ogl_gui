@@ -21,13 +21,10 @@
 open Stylesheet
 module Styleable = Stylesheet.Styleable
 
-(*a Styling *)
-let styleable_widget_box_desc     = Stylesheet.create_desc [Widget_base.styleable_act_level] Widget_base.widget_base_styles
-
 (*a Classes *)
 (*c ogl_widget_box  *)
 class ogl_widget_box stylesheet name_values =
   object (self)
-    inherit Widget_base.ogl_widget stylesheet styleable_widget_box_desc "box" name_values  as super
+    inherit Widget_base.ogl_widget stylesheet Styling.widget_box "box" name_values  as super
   end
 

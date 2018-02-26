@@ -29,20 +29,11 @@ open Ogl_view
 open Stylesheet
 module Styleable = Stylesheet.Styleable
 
-(*a Styling *)
-let font_default = option_get (Font.Outline.load_json "cabin-bold")
-let widget_text_styles = [ ("font_color", Styleable_value.St_rgb);
-                           ("font_size", Styleable_value.St_float);
-                           ("font_height", Styleable_value.St_float);
-                           ("font_thickness", Styleable_value.St_float);
-    ] @ Widget_base.widget_base_styles
-let styleable_widget_text_desc    = Stylesheet.create_desc [Widget_base.styleable_act_level] widget_text_styles
-
 (*a Classes *)
 (*c ogl_widget_text  *)
 class ogl_widget_text stylesheet name_values =
   object (self)
-    inherit Widget_base.ogl_widget stylesheet styleable_widget_text_desc "text" name_values   as super
+    inherit Widget_base.ogl_widget stylesheet Styling.widget_text "text" name_values   as super
     val mutable text = "not banana";
     val mutable font_size_ref       = Styleable_value.svr_zero;
     val mutable font_height_ref     = Styleable_value.svr_zero;
@@ -52,7 +43,7 @@ class ogl_widget_text stylesheet name_values =
     val mutable font_height         = 0.;
     val mutable font_thickness      = 0.; (* Currently not supported by ogl_obj_text *)
     val mutable font_color  = Animatable_linear_float.create [|0.;0.;0.;|]
-    val mutable font = font_default;
+    val mutable font = Styling.font_default;
     val mutable text_dims = [|0.;0.;0.|];
     val mutable obj = None;
 

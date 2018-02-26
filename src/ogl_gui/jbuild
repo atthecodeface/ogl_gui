@@ -1,17 +1,11 @@
 (jbuild_version 1)
 
-(copy_files# utils/*)
 (copy_files# sax/*)
-(copy_files# animatable/*)
 (copy_files# font/*)
+(copy_files# animatable/*)
 (copy_files# stylesheet/*)
-(copy_files# glprogram/*)
-(copy_files# layout/*)
-(copy_files# ogl_types/*)
-(copy_files# texture/*)
 (copy_files# obj/*)
 (copy_files# widget/*)
-(copy_files# app/*)
 
 (library (
   (name ogl_gui)

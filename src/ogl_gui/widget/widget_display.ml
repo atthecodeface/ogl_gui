@@ -21,23 +21,12 @@
 open Batteries
 open Atcflib
 open Tgl4
-open Result
-open Bigarray
-open Font
 open Utils
 open Animatable
 open Ogl_types
-open Layout
-open Obj
 open Ogl_view
 open Stylesheet
 module Styleable = Stylesheet.Styleable
-
-(*a Styling *)
-let widget_display_styles = [ ("width", Styleable_value.St_float);
-                               ("height", Styleable_value.St_float);
-    ] @ Widget_base.widget_base_styles
-let styleable_widget_display_desc = Stylesheet.create_desc [Widget_base.styleable_act_level] widget_display_styles
 
 (*a Classes *)
 (*c ogl_widget_display - Display which contains a single widget
@@ -62,7 +51,7 @@ let screen_depth_mm = 100. (* 10cm deep in, 10 cm out *)
 
 class ogl_widget_display stylesheet name_values (toplevel_init:t_ogl_widget option): t_ogl_display = 
 object (self)
-  inherit Widget_base.ogl_widget stylesheet styleable_widget_display_desc "display" name_values  as super
+  inherit Widget_base.ogl_widget stylesheet Styling.widget_display "display" name_values  as super
   val mutable toplevel_widget : t_ogl_widget option = toplevel_init
   val mutable app : t_ogl_app option = None
   val projection = Matrix.make 4 4

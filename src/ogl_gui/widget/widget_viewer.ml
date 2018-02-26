@@ -27,9 +27,6 @@ open Ogl_view
 open Stylesheet
 module Styleable = Stylesheet.Styleable
 
-(*a Styling *)
-let styleable_widget_viewer_desc  = Stylesheet.create_desc [Widget_base.styleable_act_level] Widget_base.widget_base_styles
-
 (*a Classes *)
 (*c ogl_widget_viewer, an OpenGL ogl_obj list viewer  *)
 let vector_x_axis = Atcflib.Vector.make3 1. 0. 0.
@@ -39,7 +36,7 @@ module Ordint = struct type t=int let compare a b = Pervasives.compare a b end
 module Intset=Set.Make(Ordint)
 class ogl_widget_viewer stylesheet name_values  = 
   object (self)
-    inherit Widget_base.ogl_widget stylesheet styleable_widget_viewer_desc "viewer" name_values  as super
+    inherit Widget_base.ogl_widget stylesheet Styling.widget_viewer "viewer" name_values  as super
   val keys_down = ref Intset.empty
   val direction = Quaternion.make_rijk 1.0 0. 0. 0.
   val scale   = ref 1.

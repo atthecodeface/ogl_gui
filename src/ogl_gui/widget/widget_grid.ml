@@ -26,16 +26,14 @@ open Layout
 open Stylesheet
 module Styleable = Stylesheet.Styleable
 
-(*a Styling *)
-let widget_grid_styles = Widget_base.widget_base_styles
-let styleable_widget_grid_desc    = Stylesheet.create_desc [Widget_base.styleable_act_level] widget_grid_styles
-
 (*a Classes *)
 (*c ogl_widget_grid  *)
 exception Bad_grid_layout of string
 class ogl_widget_grid stylesheet name_values =
- 
-  object (self)
+  
+object (self)
+  inherit Widget_base.ogl_widget stylesheet Styling.widget_grid "grid" name_values  as super
+
   val mutable grid_growth : (float t_dims3) option = None
   val mutable grid_shrink : (float t_dims3) option = None
   val mutable grid_base : (int t_dims3) option     = None
@@ -43,7 +41,6 @@ class ogl_widget_grid stylesheet name_values =
   val mutable placement : (float t_dims3) option   = None
   val spans = [|Span.create (); Span.create (); Span.create (); |]
 
-    inherit Widget_base.ogl_widget stylesheet styleable_widget_grid_desc "grid" name_values  as super
 
   (*f all_dims - invoke a function for all 3 dimensions *)
   method all_dims f =
