@@ -145,7 +145,7 @@ class ogl_widget stylesheet styleable_desc widget_type name_values : t_ogl_widge
     val mutable content_draw_dims = [|0.;0.;0.|]; (* Dimensions provided by layout *)
     val content_transformation = Matrix.(identity (make 4 4)) (* Accounts for alignment of content if it does not grow *)
     val internal_transformation = Matrix.(make 4 4)
-    val decoration   = new Ogl_decoration.ogl_decoration;
+    val decoration   = new Widget_decoration.ogl_decoration;
     val mutable id = "uncreated";
     val mutable opt_app = None;
 

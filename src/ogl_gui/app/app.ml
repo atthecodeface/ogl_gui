@@ -23,7 +23,7 @@ open Sax
 open Glprogram
 open Ogl_types
 open Utils
-open Ogl_widget
+open Widget
 
 (*a OpenGL app virtual class and basic apps *)
 (*c ogl_app *)

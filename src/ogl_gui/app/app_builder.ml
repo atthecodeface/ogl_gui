@@ -22,7 +22,6 @@ open Stylesheet
 open Sax
 open Ogl_types
 open Utils
-open Ogl_widget
 
 (*a Builder module
  *
@@ -33,7 +32,7 @@ module Builder = struct
 
   (*t stack_entry_element - element of the widget stack used in building the app from XML
    *)
-  type stack_entry_element = ((string * string) list * (ogl_widget option))
+  type stack_entry_element = ((string * string) list * (Widget.ogl_widget option))
 
   (*t stack_entry - list of widget/options that is a stack entry when building from XML
    *)
@@ -43,13 +42,13 @@ module Builder = struct
    *)
   type t = 
     {
-      app_creator : (ogl_widget_display list) -> App.ogl_app;
+      app_creator : (Widget.ogl_widget_display list) -> App.ogl_app;
       stylesheet : Stylesheet.Stylesheet.t;
       xml_additions : (string * (t -> string -> (string * string) list -> unit) ) list;
       mutable widget_stack : (string * Sax.attribute list) list;
       mutable children_stack : stack_entry list;
       mutable current_children : stack_entry;
-      mutable displays : (ogl_widget_display list);
+      mutable displays : (Widget.ogl_widget_display list);
       mutable app : App.ogl_app option;
     }
 
@@ -159,21 +158,21 @@ module Builder = struct
           "label" -> 
           (
             let text     = (Sax.Attributes.getValue ~default:""   atts "text") in
-            let widget = new ogl_widget_text app.stylesheet name_values in
+            let widget = new Widget.ogl_widget_text app.stylesheet name_values in
             widget#name_value_args name_values;
             ignore (widget#set_text text);
-            add_child app (widget :> ogl_widget)
+            add_child app (widget :> Widget.ogl_widget)
           )
         | "window" -> 
            (
-             let display = new ogl_widget_display app.stylesheet name_values None in
+             let display = new Widget.ogl_widget_display app.stylesheet name_values None in
              display#name_value_args name_values;
              iter_children (fun w -> display#add_child w) children;
              add_display app display
            )
         | "box" -> 
            (
-             let widget = new ogl_widget_box app.stylesheet name_values in
+             let widget = new Widget.ogl_widget_box app.stylesheet name_values in
              widget#name_value_args name_values;
              iter_children (fun w -> widget#add_child w) children;
              add_child app widget
@@ -191,7 +190,7 @@ module Builder = struct
            )
         | "grid" -> 
            (
-             let widget = new ogl_widget_grid app.stylesheet name_values in
+             let widget = new Widget.ogl_widget_grid app.stylesheet name_values in
              widget#name_value_args name_values;
              let element_or_span_data nvs_ow =
                let (nvs,opt_w) = nvs_ow in
@@ -203,7 +202,7 @@ module Builder = struct
              in
              List.iter element_or_span_data children;
              widget#grid_build;
-             add_child app (widget :> ogl_widget)
+             add_child app (widget :> Widget.ogl_widget)
            )
         | "app" -> 
            (
