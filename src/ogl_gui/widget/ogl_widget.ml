@@ -27,7 +27,7 @@ open Font
 open Utils
 open Animatable
 open Ogl_types
-open Ogl_layout
+open Layout
 open Ogl_obj
 open Ogl_view
 open Stylesheet

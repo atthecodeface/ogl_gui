@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @file          ogl.ml
- * @brief         OpenGl framework library
+ * @file          texture.ml
+ * @brief         Very simple module to create textures
  *
  *)
 

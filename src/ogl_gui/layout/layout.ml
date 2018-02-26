@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @file          ogl.ml
- * @brief         OpenGl framework library
+ * @file          layout.ml
+ * @brief         Modules to perform cubic table layout
  *
  *)
 
@@ -256,10 +256,12 @@ module Span = struct
         in
         List.iter draw_size_cell sae.cl
       in
+      (*
       let display_cells n sae =
         Printf.printf "cell %d base %f/%f draw %f/%f\n%!" n sae.base_start sae.base_size sae.draw_start sae.draw_size
       in
-      (*Array.iteri display_cells span_array;*)
+      Array.iteri display_cells span_array;
+      *)
       Array.iteri draw_size_cells span_array
 
   (*f All done *)

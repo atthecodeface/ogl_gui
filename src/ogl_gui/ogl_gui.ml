@@ -6,8 +6,8 @@ module Styleable_value = Styleable_value
 
 module Utils      = Utils
 module Types      = Ogl_types
-module Texture    = Ogl_texture
-module Layout     = Ogl_layout
+module Texture    = Texture
+module Layout     = Layout
 module Program    = Glprogram
 module Widget     = Ogl_widget
 module View       = Ogl_view
