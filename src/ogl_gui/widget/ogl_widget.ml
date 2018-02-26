@@ -28,7 +28,7 @@ open Utils
 open Animatable
 open Ogl_types
 open Layout
-open Ogl_obj
+open Obj
 open Ogl_view
 open Stylesheet
 module Styleable = Stylesheet.Styleable
@@ -538,7 +538,7 @@ class ogl_widget_text stylesheet name_values =
         let fsize = font_size in
         let fheight = max font_size font_height in
         text <- text_to_set;
-        let text_obj = new ogl_obj_text ~size:fsize ~height:fheight font text in
+        let text_obj = new Obj.ogl_obj_text ~size:fsize ~height:fheight font text in
         let (x0,x1,y0,y1,z0,z1) = text_obj#get_bbox in
         text_dims <- [|x1 -. x0; y1 -. y0; z1 -. z0|];
         text_obj#create_geometry ~offset:(((x0 +. x1) *. (-. 0.5)), ((y0 +. y1) *. (-. 0.5)), 0.) >>=
@@ -622,7 +622,7 @@ class ogl_widget_viewer stylesheet name_values  =
   val q2 = Quaternion.make ()
   val q3 = Quaternion.make ()
   val mutable opt_material = None
-  val mutable objs:ogl_obj list = []
+  val mutable objs:Obj.ogl_obj list = []
 
     (*f create *)
     method create app =

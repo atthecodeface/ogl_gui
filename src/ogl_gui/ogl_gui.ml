@@ -11,7 +11,7 @@ module Layout     = Layout
 module Program    = Glprogram
 module Widget     = Ogl_widget
 module View       = Ogl_view
-module Obj        = Ogl_obj
+module Obj        = Obj
 module App        = App
 module AppBuilder = App_builder.Builder
 

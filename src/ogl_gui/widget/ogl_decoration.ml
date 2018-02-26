@@ -27,7 +27,6 @@ open Utils
 open Animatable
 open Ogl_view
 open Ogl_types
-open Ogl_obj
 open Stylesheet
 
 (*a OpenGL widget decoration class - could use module for this, but be
@@ -61,7 +60,7 @@ object (self)
   val mutable face_color_ref   = Styleable_value.svr_zero;
   val draw_transformation = Matrix.(identity (make 4 4))
   val mutable widget = None;
-  val mutable gl_obj : ogl_obj_geometry option= None;
+  val mutable gl_obj : Obj.ogl_obj_geometry option= None;
   val mutable bg_triangles = 0;
   val mutable border_triangles = 0;
   val tmp_vec_0 = Atcflib.Vector.make 3;
@@ -191,7 +190,7 @@ object (self)
         border_triangles <- (List.length border_indices) / 3;
         if ((bg_triangles + border_triangles)>0) then
           begin
-            let obj = (new ogl_obj_geometry
+            let obj = (new Obj.ogl_obj_geometry
                            Gl.triangles ((bg_triangles + border_triangles)*3) 
                            (Array.of_list (bg_indices @ border_indices))
                            [ba_floats vertices]

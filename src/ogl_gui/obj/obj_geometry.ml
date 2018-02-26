@@ -21,14 +21,13 @@
 open Atcflib
 open Tgl4
 open Utils
-open Ogl_obj_base
 
 (*a OpenGL object classes *)
 (*c ogl_obj_geometry - N elements given vertices, colors and indices *)
 class ogl_obj_geometry style num indices vertex_data =
   object (self)
     (*f subclass of ogl_obj *)
-    inherit ogl_obj as super
+    inherit Obj_base.ogl_obj as super
 
     (*f create_geometry - build geometry from static object data with offset *)
     method create_geometry ~offset =

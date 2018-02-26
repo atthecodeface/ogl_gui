@@ -9,7 +9,7 @@
 (copy_files# layout/*)
 (copy_files# ogl_types/*)
 (copy_files# texture/*)
-(copy_files# ogl_obj/*)
+(copy_files# obj/*)
 (copy_files# widget/*)
 (copy_files# app/*)
 

@@ -23,7 +23,6 @@ open Tgl4
 open Result
 open Bigarray
 open Font
-open Ogl_obj_base
 open Utils
 
 (*a OpenGL object classes *)
@@ -34,7 +33,7 @@ class ogl_obj_text ?size:(size=1.0) ?height:(height=1.0) (font:Font.Outline.t) (
   object (self)
 
     (*f subclass of ogl_obj *)
-    inherit ogl_obj as super
+    inherit Obj_base.ogl_obj as super
 
     val mutable draw_fn  = fun _ -> ();
   (*f build_text - accumulate (ofs, num_pts, pt_list, tri_list) for
