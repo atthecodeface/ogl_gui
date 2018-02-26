@@ -47,6 +47,7 @@ class ogl_widget_viewer stylesheet name_values  =
   val translation = Matrix.make 4 4
   val view = Matrix.make 4 4
   val tmp = Matrix.make 4 4
+  val tmp2 = Matrix.make 4 4
   val q1 = Quaternion.make ()
   val q2 = Quaternion.make ()
   val q3 = Quaternion.make ()
@@ -95,9 +96,10 @@ class ogl_widget_viewer stylesheet name_values  =
         ignore (Matrix.set 2 3 (-. (Vector.get center 2)) translation);
         ignore (Matrix.assign_m_m rotation translation view);
         let ar_scale = (min (super#get_content_draw_dims).(0) (super#get_content_draw_dims).(1)) *. 0.35 *. !scale in
-        ignore (Matrix.scale ar_scale view);  (* Make -1/1 fit the width *)
+        ignore (Matrix.(set 1 1 ar_scale (set 0 0 ar_scale (identity tmp))));  (* Make -1/1 fit the width - but do not scale z *)
+        ignore (Matrix.assign_m_m tmp view tmp2);  (* Make -1/1 fit the width - but do not scale z *)
         let other_uids = Ogl_view.set view_set (Some material) transformation in
-        Gl.uniform_matrix4fv other_uids.(0) 1 true (ba_of_matrix4 view); (* 0 -> V *)
+        Gl.uniform_matrix4fv other_uids.(0) 1 true (ba_of_matrix4 tmp2); (* 0 -> V *)
         Gl.uniform_matrix4fv other_uids.(1) 1 true identity4; (* 1 -> M *)
         List.iter (fun o -> o#draw view_set other_uids) objs;
         Gl.bind_vertex_array 0;
@@ -134,20 +136,22 @@ class ogl_widget_viewer stylesheet name_values  =
         ignore (Vector.add z center);
         ()
 
+    (*f is_key_down *)
+    method is_key_down k = Intset.mem (int_of_char k) !keys_down
     (*f idle *)
-    method private idle _ = 
-      if Intset.mem (int_of_char ',') !keys_down then self#move_forward ((-0.01) /. !scale);
-      if Intset.mem (int_of_char 'l') !keys_down then self#move_forward (0.01 /. !scale);
-      if Intset.mem (int_of_char 'q') !keys_down then self#move_left ((-0.01) /. !scale);
-      if Intset.mem (int_of_char 'w') !keys_down then self#move_left (0.01 /. !scale);
-      if Intset.mem (int_of_char '.') !keys_down then self#pitch 0.005;
-      if Intset.mem (int_of_char ';') !keys_down then self#pitch (-0.005);
-      if Intset.mem (int_of_char 'x') !keys_down then self#yaw 0.005;
-      if Intset.mem (int_of_char 'z') !keys_down then self#yaw (-0.005);
-      if Intset.mem (int_of_char 's') !keys_down then self#roll 0.005;
-      if Intset.mem (int_of_char 'a') !keys_down then self#roll (-0.005);
-      if Intset.mem (int_of_char '\'') !keys_down then scale := !scale *. 1.05;
-      if Intset.mem (int_of_char '/') !keys_down then  scale := !scale /. 1.05;
+    method idle _ = 
+      if self # is_key_down ',' then self#move_forward ((-0.01) /. !scale);
+      if self # is_key_down 'l' then self#move_forward (0.01 /. !scale);
+      if self # is_key_down 'q' then self#move_left ((-0.01) /. !scale);
+      if self # is_key_down 'w' then self#move_left (0.01 /. !scale);
+      if self # is_key_down '.' then self#pitch 0.005;
+      if self # is_key_down ';' then self#pitch (-0.005);
+      if self # is_key_down 'x' then self#yaw 0.005;
+      if self # is_key_down 'z' then self#yaw (-0.005);
+      if self # is_key_down 's' then self#roll 0.005;
+      if self # is_key_down 'a' then self#roll (-0.005);
+      if self # is_key_down '\'' then scale := !scale *. 1.05;
+      if self # is_key_down '/' then  scale := !scale /. 1.05;
       if Intset.mem 27 !keys_down then None else
         (self#request_redraw ; Some 10)
 

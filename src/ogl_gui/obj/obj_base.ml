@@ -25,6 +25,9 @@ open Bigarray
 open Utils
 open Ogl_types
 
+(*a Types *)
+type t_vap = int * int * Tgl4.Gl.enum * bool * int *int (* index size type_ normalized stride offset *)
+
 (*a OpenGL object classes *)
 (*c ogl_obj *)
 class virtual ogl_obj  =
@@ -36,8 +39,53 @@ class virtual ogl_obj  =
     val mutable vertex_data_glids = []
     val mutable opt_material : Glprogram.Material.t option = None
 
+    (*f create_vao_2
+
+      Create a vertex attribute object, using one or more float32 bigarrays.
+
+      Each bigarray is used for a list of VAO pointers, specified individually
+      by index, size (in TYPES), type, normalized (bool), stride (in BYTES) and offset (in BYTES)    
+        
+      *)
+    method create_vao (vabs: ((t_vap list) * Utils.float32_bigarray) list) : unit Utils.ogl_result =
+
+      (* Create and bind vao *)
+      vao_glid <- gl_int_val (Gl.gen_vertex_arrays 1);
+      Gl.bind_vertex_array vao_glid;
+
+      (* Create vbos for each big_array element *)
+      let num_attributes = List.length vabs in
+      let vbo_glids      = ba_int32s num_attributes in
+      Gl.gen_buffers num_attributes vbo_glids;
+
+      (* Bind each VBO to its big_array element and attrib pointers *)
+      let rec acc_bound_vbos buf_i vab acc =
+        match vab with
+        | [] -> acc
+        | (vaps, ba)::vab_tl -> (
+          let glid = Int32.to_int (vbo_glids.{buf_i}) in
+          let size = Gl.bigarray_byte_size ba in
+          Gl.bind_buffer Gl.array_buffer glid;
+          Gl.buffer_data Gl.array_buffer size (Some ba) Gl.static_draw;
+          let bind_vap (index,size,type_,normalized,stride,offset) =
+            Gl.enable_vertex_attrib_array index;
+            Gl.vertex_attrib_pointer index size type_ normalized stride (`Offset offset);
+          in                                                                              
+          List.iter bind_vap vaps;
+          acc_bound_vbos (buf_i+1) vab_tl (glid::acc)
+        )
+      in 
+      vertex_data_glids <- (acc_bound_vbos 0 vabs []);
+      Ok () 
+
+    (*f create_vao
+    create a VAO with size (in TYPES), TYPE and bigarray for indices 0, 1, ...
+
+    create_vao [(s0,t0,ba0), (s1,t1,ba1), ...]
+    is equivalent to
+    create_vao_2 [ ([(0,s0,t0,false,0,0)],ba0), ([(0,s1,t1,false,0,0)],ba1), ...]
     method create_vao (vertex_attribute_buffers: (int * Tgl4.Gl.enum * Utils.float32_bigarray) list) : unit Utils.ogl_result =
-        vao_glid <- gl_int_val (Gl.gen_vertex_arrays 1);
+      vao_glid <- gl_int_val (Gl.gen_vertex_arrays 1);
         Gl.bind_vertex_array vao_glid;
         let num_attributes = List.length vertex_attribute_buffers in
         let vbo_glids = ba_int32s num_attributes in
@@ -56,6 +104,8 @@ class virtual ogl_obj  =
         in 
         vertex_data_glids <- (do_first 0 vertex_attribute_buffers []);
         Ok () 
+     *)
+
 
       method add_indices_to_vao (indices:Utils.uint16_bigarray) =
         Gl.bind_vertex_array vao_glid;
