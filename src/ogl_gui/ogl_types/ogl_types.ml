@@ -1,6 +1,6 @@
 open Utils
 open Atcflib
-open Ogl_program
+open Glprogram
 open Stylesheet
 
 (*a Class types for OpenGL widget, app and display, which are interrelated *)
@@ -124,7 +124,7 @@ and t_ogl_display = (* Widget that is a whole openGL context - or possibly fract
   object
     inherit t_ogl_widget
     method get_width_height : int*int
-    method set_material : Ogl_program.Material.t option -> Atcflib.Matrix.t -> int array
+    method set_material : Glprogram.Material.t option -> Atcflib.Matrix.t -> int array
     method display_reshape : int -> int -> unit (* Reshapes the toplevel window *)
     method display_draw    : unit (* Draw the context; draw self and children with correct projection *)
     method display_key     : t_key_action -> int -> int -> int -> int -> int option

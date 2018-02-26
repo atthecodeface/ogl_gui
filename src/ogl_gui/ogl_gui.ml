@@ -8,11 +8,12 @@ module Utils      = Utils
 module Types      = Ogl_types
 module Texture    = Ogl_texture
 module Layout     = Ogl_layout
-module Program    = Ogl_program
+module Program    = Glprogram
 module Widget     = Ogl_widget
 module View       = Ogl_view
 module Obj        = Ogl_obj
-module App        = Ogl_app
+module App        = App
+module AppBuilder = App_builder.Builder
 
 class  ogl_obj_geometry = Obj.ogl_obj_geometry
 class virtual  ogl_obj          = Obj.ogl_obj
@@ -20,7 +21,6 @@ class virtual  ogl_obj          = Obj.ogl_obj
 class  ogl_widget = Widget.ogl_widget
 
 class  ogl_app    = App.ogl_app
-module AppBuilder = App.Builder
 
 let create_stylesheet = Ogl_widget.create_stylesheet
 

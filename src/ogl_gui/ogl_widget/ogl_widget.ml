@@ -27,7 +27,6 @@ open Font
 open Utils
 open Animatable
 open Ogl_types
-open Ogl_program
 open Ogl_layout
 open Ogl_obj
 open Ogl_view
@@ -778,7 +777,7 @@ object (self)
   val play2 = Matrix.make 4 4
   val playq1 = Quaternion.make_rijk 1.0 0.0 0.0 0.
   val playq2 = Quaternion.make_rijk 1.0 0.0 0.0 0.
-  val mutable current_material : Ogl_program.Material.t option = None
+  val mutable current_material : Glprogram.Material.t option = None
   initializer
     if option_is_some toplevel_init then
      super#add_child (option_get toplevel_init) ;
@@ -817,9 +816,9 @@ object (self)
     let transformation = ba_of_matrix4 widget_transformation in
     if ((Option.is_none current_material) || (Option.is_none opt_material) || ((Option.get opt_material) != (Option.get current_material))) then (
       current_material <- opt_material;
-      Material.set_projection (option_get opt_material) (ba_of_matrix4 projection) transformation
+      Glprogram.Material.set_projection (option_get opt_material) (ba_of_matrix4 projection) transformation
     ) else (
-      Material.set_transformation (option_get opt_material) transformation
+      Glprogram.Material.set_transformation (option_get opt_material) transformation
     )
  
   method display_draw = 

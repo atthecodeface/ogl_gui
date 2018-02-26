@@ -5,13 +5,13 @@
 (copy_files# animatable/*)
 (copy_files# font/*)
 (copy_files# stylesheet/*)
+(copy_files# glprogram/*)
 (copy_files# ogl_layout/*)
 (copy_files# ogl_types/*)
-(copy_files# ogl_program/*)
 (copy_files# ogl_texture/*)
 (copy_files# ogl_obj/*)
 (copy_files# ogl_widget/*)
-(copy_files# ogl_app/*)
+(copy_files# app/*)
 
 (library (
   (name ogl_gui)

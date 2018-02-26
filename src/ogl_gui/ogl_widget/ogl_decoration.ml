@@ -28,7 +28,6 @@ open Animatable
 open Ogl_view
 open Ogl_types
 open Ogl_obj
-open Ogl_program
 open Stylesheet
 
 (*a OpenGL widget decoration class - could use module for this, but be

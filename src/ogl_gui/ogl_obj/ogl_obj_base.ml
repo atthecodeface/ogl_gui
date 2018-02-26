@@ -34,7 +34,7 @@ class virtual ogl_obj  =
     val mutable vao_glid = -1
     val mutable index_glid = -1
     val mutable vertex_data_glids = []
-    val mutable opt_material : Ogl_program.Material.t option = None
+    val mutable opt_material : Glprogram.Material.t option = None
 
     method create_vao (vertex_attribute_buffers: (int * Tgl4.Gl.enum * Utils.float32_bigarray) list) : unit Utils.ogl_result =
         vao_glid <- gl_int_val (Gl.gen_vertex_arrays 1);
