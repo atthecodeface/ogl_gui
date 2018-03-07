@@ -11,6 +11,13 @@ type t_mouse_action =
 | Mouse_action_wheel
 | Mouse_action_motion
 
+type t_joystick_action = 
+  Joystick_action_down
+| Joystick_action_up
+| Joystick_action_axis
+| Joystick_action_ball
+| Joystick_action_hat
+
 type t_key_action =
   Key_action_press
 | Key_action_release
@@ -74,7 +81,11 @@ type t_action_vector = (Collider_ray.t * float) (* launch point + direction coll
 type t_mouse_callback_result = McbNone | McbSome of (t_mouse_action -> int -> t_action_vector -> int array -> t_mouse_callback_result)
 type t_mouse_claimant = t_mouse_action -> int -> t_action_vector -> int array -> (t_mouse_callback_result)
 type t_mouse_callback = t_mouse_action -> int -> t_action_vector -> int array -> (t_mouse_callback_result)
-type t_mouse_result = (float * t_mouse_callback) option
+type t_mouse_result    = (float * t_mouse_callback) option
+type t_joystick_callback_result = JcbNone | JcbSome of (t_joystick_action -> int -> int -> int -> int array -> t_joystick_callback_result)
+type t_joystick_claimant = t_joystick_action -> int -> int -> int -> int array -> (t_joystick_callback_result)
+type t_joystick_callback = t_joystick_action -> int -> int -> int -> int array -> (t_joystick_callback_result)
+type t_joystick_result = t_joystick_callback option
 type t_key_callback = t_key_action -> int -> int -> t_action_vector -> int option
 type t_key_result = (float * t_key_callback) option
 class type t_ogl_view_set = object
@@ -111,6 +122,7 @@ and t_ogl_widget =
     method intersect_ray    : Collider_ray.t -> float option
     method key              : t_key_action -> int -> int -> t_action_vector -> t_key_result
     method mouse            : t_mouse_action -> int -> t_action_vector -> int array -> t_mouse_result
+    method joystick         : t_joystick_action -> int -> int -> int -> int array -> t_joystick_result
     method request_redraw   : unit (* called by the widget or a child to request redraw *)
     method str : string
   end
@@ -130,6 +142,8 @@ and t_ogl_display = (* Widget that is a whole openGL context - or possibly fract
     method display_key     : t_key_action -> int -> int -> int -> int -> int option
     method display_mouse   : t_mouse_action -> int -> int -> int -> int array -> t_mouse_callback_result
     method display_mouse_claimant : t_mouse_action -> int -> int -> int -> int array -> t_mouse_callback -> t_mouse_callback_result
+    method display_joystick: t_joystick_action -> int -> int -> int -> int array -> t_joystick_callback_result
+    method display_joystick_claimant : t_joystick_action -> int -> int -> int -> int array -> t_joystick_callback -> t_joystick_callback_result
   end
 
 (*c and t_ogl_app - one of these is required for the application
@@ -151,6 +165,7 @@ and t_ogl_app =
     method button_pressed : t_ogl_widget -> unit
     method key         : t_window_handle option -> t_key_action -> int -> int -> int -> int -> unit
     method mouse       : t_window_handle option -> t_mouse_action -> int -> int -> int -> int array -> unit
+    method joystick    : t_joystick_action -> int -> int -> int -> int array -> unit
     method draw        : t_window_handle -> unit
     method reshape     : t_window_handle -> int -> int -> unit
     method request_redraw : t_ogl_display -> unit (* called by a toplevel widget to request redraw when need_redraw is set *)

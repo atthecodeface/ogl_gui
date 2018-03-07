@@ -38,6 +38,7 @@ class ogl_widget_viewer stylesheet name_values  =
   object (self)
     inherit Widget_base.ogl_widget stylesheet Styling.widget_viewer "viewer" name_values  as super
   val keys_down = ref Intset.empty
+  val joystick_axes = Array.make 16 0;
   val direction = Quaternion.make_rijk 1.0 0. 0. 0.
   val scale   = ref 1.
   val center = Vector.make3 0. 0. 0.
@@ -138,6 +139,12 @@ class ogl_widget_viewer stylesheet name_values  =
 
     (*f is_key_down *)
     method is_key_down k = Intset.mem (int_of_char k) !keys_down
+
+    (*f joystick_axis_value *)
+    method joystick_axis_value a =
+      let v = joystick_axes.(a) in
+      if (v < -1024) then v else if (v > 1024) then v else 0
+
     (*f idle *)
     method idle _ = 
       if self # is_key_down ',' then self#move_forward ((-0.01) /. !scale);
@@ -152,6 +159,10 @@ class ogl_widget_viewer stylesheet name_values  =
       if self # is_key_down 'a' then self#roll (-0.005);
       if self # is_key_down '\'' then scale := !scale *. 1.05;
       if self # is_key_down '/' then  scale := !scale /. 1.05;
+      let v = self # joystick_axis_value 2 in
+      if (v!=0) then self # roll ((float v) /. 32768.0 /. 10.);
+      let v = self # joystick_axis_value 3 in
+      if (v!=0) then self # pitch ((float v) /. 32768.0 /. 10.);
       if Intset.mem 27 !keys_down then None else
         (self#request_redraw ; Some 10)
 
@@ -160,6 +171,15 @@ class ogl_widget_viewer stylesheet name_values  =
       (match action with
          Key_action_press -> (keys_down := Intset.add k !keys_down)
        | Key_action_release -> (keys_down := Intset.remove k !keys_down)
+      );
+      None
+
+    method joystick action which axis value options = 
+      ( match action with
+        | Joystick_action_axis -> (
+          joystick_axes.(axis) <- value
+        )
+        | _ -> ()
       );
       None
 

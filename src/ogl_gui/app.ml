@@ -24,6 +24,7 @@ open Glprogram
 open Ogl_types
 open Utils
 open Widget
+module Option=Batteries.Option
 
 (*a OpenGL app virtual class and basic apps *)
 (*c ogl_app *)
@@ -38,7 +39,9 @@ object (self)
   val mutable window_displays : (t_window_handle * t_ogl_display) list = [];
   val mutable should_quit  = false;
   val mutable idler_list:(int*(unit -> int option)) list = [];
-  val mutable opt_mouse_claimant : (t_ogl_display * t_mouse_claimant) option = None;
+  val mutable opt_mouse_claimant    : (t_ogl_display * t_mouse_claimant) option = None;
+  val mutable opt_joystick_claimant : (t_ogl_display * t_joystick_claimant) option = None;
+  val mutable focus_display : t_ogl_display option = None;
 
   (*f set_create_window *)
   method set_create_window cwin =
@@ -63,6 +66,7 @@ object (self)
 
   (*f add_display - add a name/ogl_display/window_handle to the app *)
   method add_display (name:string) display window_handle = 
+    focus_display <- Some display;
     (display_list <- (name,display,window_handle)::display_list )
 
   (*f create_shaders - called during app creation *)
@@ -171,6 +175,24 @@ object (self)
     );
     if (option_is_none opt_mouse_claimant) then (
       opt_mouse_claimant <- invoke_display_callback opt_handle (fun display -> display#display_mouse action mouse x y options)
+    )
+
+  (*f joystick - handle a joystick event in the 'focus' *)
+  method joystick action which axis value options =
+    if (Option.is_some opt_joystick_claimant) then (
+      opt_joystick_claimant <-
+        let (display, cb) = Option.get opt_joystick_claimant in
+        match (display # display_joystick_claimant action which axis value options cb) with
+        | JcbNone -> None
+        | JcbSome cb -> Some (display, cb)
+    );
+    if (Option.is_none opt_joystick_claimant) then (
+      let display = (Option.get focus_display) in
+      opt_joystick_claimant <- (
+        match display # display_joystick action which axis value options with
+        | JcbNone -> None
+        | JcbSome cb -> Some (display, cb)
+      )
     )
 
   (*f destroy the application - delete programs, ogl_displays, etc *)

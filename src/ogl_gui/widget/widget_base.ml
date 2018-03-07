@@ -306,6 +306,15 @@ class ogl_widget stylesheet styleable_desc widget_type name_values : t_ogl_widge
            else
              Some (k, option_get opt_cb)
 
+    (*f joystick - handle a joystick action *)
+    method joystick action which axis value options =
+      let thing opt_cb c = 
+        match (c # joystick action which axis value options) with
+          None -> opt_cb
+        | Some cb -> (Some cb)
+      in
+      List.fold_left thing None children
+
     (*f request_redraw *)
     method request_redraw = 
       match parent with

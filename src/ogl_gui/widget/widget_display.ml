@@ -151,25 +151,52 @@ object (self)
 
     The resulting callback of the propagation (mouse_result) can then be invoked
 
-    The result of the callback could be a claim on future mouse events
+    The result of the callback could be a claim on future mouse events; it will be invoked
+    prior to the standard mechanism, permitting drag operations, for example
    *)
   method display_mouse action mouse x y options =
-    let action_vector = self#initial_action_vector x y in
-    let mouse_result  = self#mouse action mouse action_vector options in
+    let action_vector = self # initial_action_vector x y in
+    let mouse_result  = self # mouse action mouse action_vector options in
     match mouse_result with
-      Some da -> let (_,cb) = da in cb action mouse action_vector options
+    | Some da -> let (_,cb) = da in cb action mouse action_vector options
     |  _ -> McbNone
 
   (*f display_mouse_claimant
+    Invoked for subsequent mouse operations if a callback returned a claiming callback
+
+    The 'callback' invocation is the result of the last mouse operation
+
     The result of the callback could be a claim on future mouse events
    *)
   method display_mouse_claimant action mouse x y options callback =
     let action_vector = self#initial_action_vector x y in
     callback action mouse action_vector options
 
-    method request_redraw = 
-      match super#get_parent with
-        Some widget -> widget#request_redraw
-      | None -> (option_get app)#request_redraw (self:>t_ogl_display)
+  (*f display_joystick
+    Propagate through children along the 'action_vector'?
+   *)
+  method display_joystick action which axis value options =
+    let joystick_result = self # joystick action which axis value options in
+    match joystick_result with
+    | Some cb -> cb action which axis value options
+    | _ -> JcbNone
+
+  (*f display_joystick_claimant
+    Invoked for subsequent joystick operations if a callback returned a claiming callback
+
+    The 'callback' invocation is the result of the last joystick operation
+
+    The result of the callback could be a claim on future joystick events
+   *)
+  method display_joystick_claimant action which axis value options callback =
+    callback action which axis value options
+
+  (*f request_redraw *)
+  method request_redraw = 
+    match super#get_parent with
+    | Some widget -> widget#request_redraw
+    | None -> (option_get app)#request_redraw (self:>t_ogl_display)
+
+    
 end
 
