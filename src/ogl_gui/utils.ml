@@ -27,6 +27,7 @@ type 'a ogl_result     = ('a, string) Result.result
 type float32_bigarray  = (float, Bigarray.float32_elt,       Bigarray.c_layout) Bigarray.Array1.t
 type int32_bigarray    = (int32, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t
 type uint16_bigarray   = (int, Bigarray.int16_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+type uint8_bigarray    = (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
 (*a Base types *)
 (*t t_dims3/6 *)

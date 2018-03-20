@@ -30,6 +30,14 @@ type t_vap = int * int * Tgl4.Gl.enum * bool * int *int (* index size type_ norm
 
 (*a OpenGL object classes *)
 (*c ogl_obj *)
+let add_indices_to_vao vao_glid (indices:(_, _, Bigarray.c_layout) Bigarray.Array1.t) =
+  Gl.bind_vertex_array vao_glid;
+  let index_glid = gl_int_val (Gl.gen_buffers 1) in
+  let size     = Gl.bigarray_byte_size indices in
+  Gl.bind_buffer Gl.element_array_buffer index_glid;
+  Gl.buffer_data Gl.element_array_buffer size (Some indices) Gl.static_draw;
+  index_glid
+
 class virtual ogl_obj  =
   object (self)
 
@@ -39,7 +47,7 @@ class virtual ogl_obj  =
     val mutable vertex_data_glids = []
     val mutable opt_material : Glprogram.Material.t option = None
 
-    (*f create_vao_2
+    (*f create_vao
 
       Create a vertex attribute object, using one or more float32 bigarrays.
 
@@ -78,49 +86,21 @@ class virtual ogl_obj  =
       vertex_data_glids <- (acc_bound_vbos 0 vabs []);
       Ok () 
 
-    (*f create_vao
-    create a VAO with size (in TYPES), TYPE and bigarray for indices 0, 1, ...
-
-    create_vao [(s0,t0,ba0), (s1,t1,ba1), ...]
-    is equivalent to
-    create_vao_2 [ ([(0,s0,t0,false,0,0)],ba0), ([(0,s1,t1,false,0,0)],ba1), ...]
-    method create_vao (vertex_attribute_buffers: (int * Tgl4.Gl.enum * Utils.float32_bigarray) list) : unit Utils.ogl_result =
-      vao_glid <- gl_int_val (Gl.gen_vertex_arrays 1);
-        Gl.bind_vertex_array vao_glid;
-        let num_attributes = List.length vertex_attribute_buffers in
-        let vbo_glids = ba_int32s num_attributes in
-        Gl.gen_buffers num_attributes vbo_glids;
-        let rec do_first n vab acc =
-          if (vab == []) then (acc) else (
-            let (num,typ,ba)::vab_tl = vab in
-            let glid = Int32.to_int (vbo_glids.{n}) in
-            Gl.bind_buffer Gl.array_buffer glid;
-            let size = Gl.bigarray_byte_size ba in
-            Gl.buffer_data Gl.array_buffer size (Some ba) Gl.static_draw;
-            Gl.enable_vertex_attrib_array n;
-            Gl.vertex_attrib_pointer n num typ false 0 (`Offset 0);
-            do_first (n+1) vab_tl (glid::acc)
-          )
-        in 
-        vertex_data_glids <- (do_first 0 vertex_attribute_buffers []);
-        Ok () 
+    (*f add_indices8_to_vao
      *)
+    method add_indices8_to_vao (indices:Utils.uint8_bigarray) =
+      index_glid <- add_indices_to_vao vao_glid indices;
 
+    (*f add_indices_to_vao
+     *)
+    method add_indices_to_vao (indices:Utils.uint16_bigarray) =
+      index_glid <- add_indices_to_vao vao_glid indices
 
-      method add_indices_to_vao (indices:Utils.uint16_bigarray) =
-        Gl.bind_vertex_array vao_glid;
-        index_glid <- gl_int_val (Gl.gen_buffers 1);
-        let size     = Gl.bigarray_byte_size indices in
-        Gl.bind_buffer Gl.element_array_buffer index_glid;
-        Gl.buffer_data Gl.element_array_buffer size (Some indices) Gl.static_draw;
-        ()
-      method add_indices32_to_vao (indices:Utils.int32_bigarray) =
-        Gl.bind_vertex_array vao_glid;
-        index_glid <- gl_int_val (Gl.gen_buffers 1);
-        let size     = Gl.bigarray_byte_size indices in
-        Gl.bind_buffer Gl.element_array_buffer index_glid;
-        Gl.buffer_data Gl.element_array_buffer size (Some indices) Gl.static_draw;
-        ()
+    (*f add_indices32_to_vao
+     *)
+    method add_indices32_to_vao (indices:Utils.int32_bigarray) =
+      index_glid <- add_indices_to_vao vao_glid indices
+
     (*f bind_and_draw - bind vao, index vbo, and two float3 vbos and call draw callback*)
     method private bind_and_draw (draw_fn:unit->unit) : unit =
       let bind_attrib id loc dim typ =

@@ -193,7 +193,7 @@ object (self)
             let obj = (new Obj.ogl_obj_geometry
                            Gl.triangles ((bg_triangles + border_triangles)*3) 
                            (Array.of_list (bg_indices @ border_indices))
-                           [ba_floats vertices]
+                           [ ( [(0,3,Gl.float,false,0,3*4)], (ba_floats vertices) ) ]
                       )
             in
             ignore (obj#create_geometry ~offset:(0.,0.,0.));

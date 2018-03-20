@@ -21,6 +21,8 @@
 open Obj_base
 open Obj_text
 open Obj_geometry
+open Obj_arrays
+module Arrays=Ogl_obj_arrays
 type t_vap = Obj_base.t_vap
 class virtual ogl_obj = Obj_base.ogl_obj
 class ogl_obj_geometry = Obj_geometry.ogl_obj_geometry

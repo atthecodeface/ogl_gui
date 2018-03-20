@@ -31,8 +31,8 @@ class ogl_obj_geometry style num indices vertex_data =
 
     (*f create_geometry - build geometry from static object data with offset *)
     method create_geometry ~offset =
-      super#create_geometry_from_indices (ba_uint8s indices)
-                                         vertex_data
+      self # create_vao vertex_data >>= fun _ -> 
+      self # add_indices8_to_vao (ba_uint8s indices); Ok ()
 
     (*f draw - invoke super's draw with callback to draw elements once vao and vbos are bound *)
     method draw view_set other_uids =
