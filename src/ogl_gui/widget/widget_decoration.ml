@@ -193,7 +193,7 @@ object (self)
             let obj = (new Obj.ogl_obj_geometry
                            Gl.triangles ((bg_triangles + border_triangles)*3) 
                            (Array.of_list (bg_indices @ border_indices))
-                           [ ( [(0,3,Gl.float,false,0,3*4)], (ba_floats vertices) ) ]
+                           [ ( [(0,3,Gl.float,false,3*4,0)], (ba_floats vertices) ) ]
                       )
             in
             ignore (obj#create_geometry ~offset:(0.,0.,0.));
@@ -216,7 +216,7 @@ object (self)
       let bg_rgb = Animatable_linear_float.get_value border_color in
       let (bg_r, bg_g, bg_b) = (bg_rgb.(0), bg_rgb.(1), bg_rgb.(2)) in
        Gl.uniform3f other_uids.(0) bg_r bg_g bg_b;
-       (option_get gl_obj)#draw_subset view_set (bg_triangles*3) (border_triangles*3);
+       (option_get gl_obj) # draw_subset view_set (bg_triangles*3) (border_triangles*3);
        Gl.bind_vertex_array 0;
       ())
 
@@ -228,7 +228,7 @@ object (self)
        let bg_rgb = face_color in
        let (bg_r, bg_g, bg_b) = (bg_rgb.(0), bg_rgb.(1), bg_rgb.(2)) in
        Gl.uniform3f other_uids.(0) bg_r bg_g bg_b;
-       (option_get gl_obj)#draw_subset view_set 0 (bg_triangles*3);
+       (option_get gl_obj) # draw_subset view_set 0 (bg_triangles*3);
        Gl.bind_vertex_array 0;
       ())
 

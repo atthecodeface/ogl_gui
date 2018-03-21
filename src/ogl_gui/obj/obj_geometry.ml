@@ -36,17 +36,13 @@ class ogl_obj_geometry style num indices vertex_data =
 
     (*f draw - invoke super's draw with callback to draw elements once vao and vbos are bound *)
     method draw view_set other_uids =
-      let d _ = 
-        Gl.draw_elements style num Gl.unsigned_byte (`Offset 0);
-        ()
-      in self#bind_and_draw d
+      Gl.bind_vertex_array vao_glid;
+      Gl.draw_elements style num Gl.unsigned_byte (`Offset 0)
 
     (*f draw_subset - draw a subset of the elements *)
     method draw_subset (view_set:Ogl_types.t_ogl_view_set) offset num =
-      let d _ = 
-        Gl.draw_elements style num Gl.unsigned_byte (`Offset offset);
-        ()
-      in self#bind_and_draw d
+      Gl.bind_vertex_array vao_glid;
+      Gl.draw_elements style num Gl.unsigned_byte (`Offset offset)
 
     (*f All done *)
 end
