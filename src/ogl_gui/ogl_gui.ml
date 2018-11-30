@@ -22,4 +22,5 @@ class  ogl_widget = Widget.ogl_widget
 class  ogl_app    = App.ogl_app
 
 let create_stylesheet = Styling.create_stylesheet
+let widget_base_styles = Styling.widget_base_styles
 

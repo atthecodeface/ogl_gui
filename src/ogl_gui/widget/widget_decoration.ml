@@ -65,6 +65,7 @@ object (self)
   val mutable border_triangles = 0;
   val tmp_vec_0 = Atcflib.Vector.make 3;
   val tmp_vec_1 = Atcflib.Vector.make 3;
+  val tmp_vec_2 = Atcflib.Vector.make 3;
          
   (*t register_widget - record the widget corresponding to this decoration 
     SHOULD BECOME CREATE *)
@@ -160,7 +161,7 @@ object (self)
             ignore Vector.(set 0 (vertices.(v3*3+0) -. vertices.(v0*3+0)) tmp_vec_1 |>
                               set 1 (vertices.(v3*3+1) -. vertices.(v0*3+1)) |>
                               set 2 (vertices.(v3*3+2) -. vertices.(v0*3+2)) );
-            let dp = Atcflib.Vector.(modulus_squared (cross_product3 tmp_vec_0 tmp_vec_1)) in
+            let dp = Atcflib.Vector.(modulus_squared (assign_cross_product3 tmp_vec_0 tmp_vec_1 tmp_vec_2)) in
             if (dp>1E-9) then 
               acc @ [v0;v1;v3;v1;v3;v2]
             else

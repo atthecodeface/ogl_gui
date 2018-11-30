@@ -230,6 +230,7 @@ class ogl_widget stylesheet styleable_desc widget_type name_values : t_ogl_widge
       Printf.printf "%sLayout %s : %s : %s\n%!" (nspaces (depth*3) "") self#str (str_fa dims) (str_fa offset);
       bbox_draw_dims   <- self#apply_fill   dims last_desired_dims;
       bbox_draw_offset <- self#apply_align  offset dims bbox_draw_dims;
+      Printf.printf "Mat %s\n" (Matrix.str mat);
       Matrix.(ignore (assign mat bbox_transformation);
               ignore (assign mat bbox_transformation_i |> lup_invert));
       let dec_dims       = decoration#get_decoration_dims in
@@ -243,7 +244,9 @@ class ogl_widget stylesheet styleable_desc widget_type name_values : t_ogl_widge
      *)
     method layout_content_with_dims (dims:float t_dims3) (mat:Matrix.t) (offset:float t_dims3) =
       ignore (self#set_layout dims mat offset); (* Dont use internal transform without killing offset? *)
-      List.iter (fun w -> w#layout dims mat offset) children;
+      Printf.printf "layout_content_with_dims %s\n" (Matrix.str mat);
+      List.iter (fun w -> (w#layout dims mat offset; Printf.printf ">>layout_content_with_dims %s\n" (Matrix.str mat) )) children;
+      Printf.printf "Done\n";
       ()
 
     (*f set_layout - set the matrix (and dimension/offset if clipping is to be performed) for later drawing *)

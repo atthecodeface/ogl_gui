@@ -32,17 +32,17 @@ class ogl_obj_geometry style num indices vertex_data =
     (*f create_geometry - build geometry from static object data with offset *)
     method create_geometry ~offset =
       self # create_vao vertex_data >>= fun _ -> 
-      self # add_indices8_to_vao (ba_uint8s indices); Ok ()
+      self # add_indices_to_vao (ba_uint16s indices); Ok ()
 
     (*f draw - invoke super's draw with callback to draw elements once vao and vbos are bound *)
     method draw view_set other_uids =
       Gl.bind_vertex_array vao_glid;
-      Gl.draw_elements style num Gl.unsigned_byte (`Offset 0)
+      Gl.draw_elements style num Gl.unsigned_short (`Offset 0)
 
     (*f draw_subset - draw a subset of the elements *)
     method draw_subset (view_set:Ogl_types.t_ogl_view_set) offset num =
       Gl.bind_vertex_array vao_glid;
-      Gl.draw_elements style num Gl.unsigned_byte (`Offset offset)
+      Gl.draw_elements style num Gl.unsigned_short (`Offset offset)
 
     (*f All done *)
 end

@@ -124,7 +124,8 @@ object (self)
                       set 1 (float y) |>
                       set 2 (-. screen_depth_mm) |>
                       set 3 1.0));
-    ignore (Vector.assign_m_v screen_to_mm tmp_vector action_launch);
+    ignore (Matrix.apply screen_to_mm tmp_vector action_launch);
+    ignore (Matrix.apply screen_to_mm tmp_vector action_launch);
     ignore (Vector.(set 0 0. action_direction |>
                       set 1 0. |>
                       set 2 (2. *. screen_depth_mm) |>

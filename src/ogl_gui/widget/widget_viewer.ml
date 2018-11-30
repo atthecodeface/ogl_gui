@@ -42,6 +42,7 @@ class ogl_widget_viewer stylesheet name_values  =
   val direction = Quaternion.make_rijk 1.0 0. 0. 0.
   val scale   = ref 1.
   val center = Vector.make3 0. 0. 0.
+  val z = Vector.make4 0. 0. 0. 0.
   val mutable idler_handle = -1
   val mutable draw_fn = let d a t = () in d
   val rotation = Matrix.make 4 4
@@ -125,7 +126,7 @@ class ogl_widget_viewer stylesheet name_values  =
     method private move_forward scale = 
         ignore (Matrix.assign_from_q direction rotation);
         ignore (Matrix.scale scale rotation);
-        let z = (Matrix.row_vector rotation 2) in
+        ignore (Matrix.row_vector rotation 2 z);
         ignore (Vector.add z center);
         ()
 
@@ -133,7 +134,7 @@ class ogl_widget_viewer stylesheet name_values  =
     method private move_left scale = 
         ignore (Matrix.assign_from_q direction rotation);
         ignore (Matrix.scale scale rotation);
-        let z = (Matrix.row_vector rotation 0) in
+        ignore (Matrix.row_vector rotation 0 z);
         ignore (Vector.add z center);
         ()
 

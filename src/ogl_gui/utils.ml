@@ -115,6 +115,7 @@ let ( >>= ) x f = match x with Ok v -> f v | Error _ as e -> e
 (*f ba_* - create Bigarrays from arrays of floats/ints/character length *)
 let ba_floats fs  = Bigarray.(Array1.of_array float32 c_layout fs)
 let ba_uint8s is  = Bigarray.(Array1.of_array int8_unsigned c_layout is)
+let ba_uint16s is = Bigarray.(Array1.of_array int16_unsigned c_layout is)
 let ba_string len = Bigarray.(Array1.create char c_layout len)
 let ba_int32_1    = Bigarray.(Array1.create int32 c_layout 1)
 let ba_int32s len = Bigarray.(Array1.create int32 c_layout len)
@@ -238,12 +239,13 @@ let identity4 = ba_floats[| 1.0; 0.0; 0.0; 0.0;
                             0.0; 0.0; 1.0; 0.0;
                             0.0; 0.0; 0.0; 1.0;|]
 (*f ba_of_matrix4 *)
+let tmp_v4 = Vector.make4 0. 0. 0. 0.
 let ba_of_matrix4 m =     
       let get_v = Matrix.row_vector m in
-      let v4 = [|Vector.coords (get_v 0);
-                 Vector.coords (get_v 1);
-                 Vector.coords (get_v 2);
-                 Vector.coords (get_v 3);|] in
+      let v4 = [|Vector.coords (get_v 0 tmp_v4);
+                 Vector.coords (get_v 1 tmp_v4);
+                 Vector.coords (get_v 2 tmp_v4);
+                 Vector.coords (get_v 3 tmp_v4);|] in
       ba_floats[| v4.(0).(0); v4.(0).(1); v4.(0).(2); v4.(0).(3); 
                            v4.(1).(0); v4.(1).(1); v4.(1).(2); v4.(1).(3); 
                            v4.(2).(0); v4.(2).(1); v4.(2).(2); v4.(2).(3); 
@@ -270,7 +272,7 @@ module Collider_ray = struct
     else
       (
         let ti = option_get transform_i in
-        Vector.(ignore (assign_m_v ti t.origin_v t.tmp0_v); ignore (assign_m_v ti t.direction_v t.tmp1_v))
+        Matrix.(ignore (apply ti t.origin_v t.tmp0_v); ignore (apply ti t.direction_v t.tmp1_v))
       );
     for i=0 to 2 do 
         t.origin.(i)          <- Vector.get t.tmp0_v i;
